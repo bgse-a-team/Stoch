@@ -48,29 +48,29 @@
 \section{Discounted Cost}
 In the framework of the basic problem, consider the case where the cost is of the form $$\mathbb{E}_{\{w_k\}}[\alpha^N g_N(x_N) + \sum_{k=0}^{N-1} \alpha^k g_k(x_k, u_k, w_k)]$$ where $\alpha \in (0,1)$ is a discount factor. \\
 
-Let $J^{'}_{k}$ be the optimal value of the $(N-k)$-tail problem with cost function $g^{'}_N (x_N) = \alpha^N g_N(x_N)$ and $g^{'}_k (x_k) = \alpha^k g_k(x_k, u_k, w_k)$. Then we have
+Let $J^{*}_{k}$ be the optimal value of the $(N-k)$-tail problem with cost function $g^{*}_N (x_N) = \alpha^N g_N(x_N)$ and $g^{*}_k (x_k) = \alpha^k g_k(x_k, u_k, w_k)$. Then we have
 
 \begin{align} 
 \begin{split}
-J^{'}_N(x_N) &= g^{'}_N (x_N)\\ 
+J^{*}_N(x_N) &= g^{*}_N (x_N)\\ 
 &= \alpha^N g_N(x_N)\\
-\alpha^{-N} J^{'}_N(x_N) &= g_N(x_N)\\
+\alpha^{-N} J^{*}_N(x_N) &= g_N(x_N)\\
 \\
-J^{'}_k(x_k) &= \min_{u_k \in U_k(x_k)} \mathbb{E}_{w_k} \big[g^{'}_k(x_k, u_k, w_k) + J^{'}_{k+1}(f_k(x_k, u_k, w_k))\big]\\
-&= \min_{u_k \in U_k(x_k)} \mathbb{E}_{w_k} \big[\alpha^k g_k(x_k, u_k, w_k) + J^{'}_{k+1}(f_k(x_k, u_k, w_k))\big]\\
-\alpha^{-k} J^{'}_k(x_k) &= \min_{u_k \in U_k(x_k)} \mathbb{E}_{w_k} \big[g_k(x_k, u_k, w_k) + \alpha^{-k} J^{'}_{k+1}(f_k(x_k, u_k, w_k))\big]\\
-&= \min_{u_k \in U_k(x_k)} \mathbb{E}_{w_k} \big[g_k(x_k, u_k, w_k) + \alpha \alpha^{-(k+1)} J^{'}_{k+1}(f_k(x_k, u_k, w_k))\big]\\
+J^{*}_k(x_k) &= \min_{u_k \in U_k(x_k)} \mathbb{E}_{w_k} \big[g^{*}_k(x_k, u_k, w_k) + J^{*}_{k+1}(f_k(x_k, u_k, w_k))\big]\\
+&= \min_{u_k \in U_k(x_k)} \mathbb{E}_{w_k} \big[\alpha^k g_k(x_k, u_k, w_k) + J^{*}_{k+1}(f_k(x_k, u_k, w_k))\big]\\
+\alpha^{-k} J^{*}_k(x_k) &= \min_{u_k \in U_k(x_k)} \mathbb{E}_{w_k} \big[g_k(x_k, u_k, w_k) + \alpha^{-k} J^{*}_{k+1}(f_k(x_k, u_k, w_k))\big]\\
+&= \min_{u_k \in U_k(x_k)} \mathbb{E}_{w_k} \big[g_k(x_k, u_k, w_k) + \alpha \alpha^{-(k+1)} J^{*}_{k+1}(f_k(x_k, u_k, w_k))\big]\\
 \end{split}					
 \end{align} 
-Now let $J_k(x_k) = \alpha^{-k} J^{'} (x_k)$ and so we get the DP-like algorithm
+Now let $J_k(x_k) = \alpha^{-k} J^{*} (x_k)$ and so we get the DP-like algorithm
 
 \begin{align} 
 \begin{split}
-J_N(x_N) &= \alpha^{-N} J^{'}(x_N)\\
+J_N(x_N) &= \alpha^{-N} J^{*}(x_N)\\
 &= g_N(x_N)\\
 \\
-J_k(x_k)&= \alpha^{-k} J^{'}(x_k)\\
-&= \min_{u_k \in U_k(x_k)} \mathbb{E}_{w_k} \big[g_k(x_k, u_k, w_k) + \alpha \alpha^{-(k+1)} J^{'}_{k+1}(f_k(x_k, u_k, w_k))\big]\\
+J_k(x_k)&= \alpha^{-k} J^{*}(x_k)\\
+&= \min_{u_k \in U_k(x_k)} \mathbb{E}_{w_k} \big[g_k(x_k, u_k, w_k) + \alpha \alpha^{-(k+1)} J^{*}_{k+1}(f_k(x_k, u_k, w_k))\big]\\
 &= \min_{u_k \in U_k(x_k)} \mathbb{E}_{w_k} \big[g_k(x_k, u_k, w_k) + \alpha J_{k+1}(f_k(x_k, u_k, w_k))\big]\\
 \end{split}					
 \end{align} 
@@ -79,6 +79,8 @@ J_k(x_k)&= \alpha^{-k} J^{'}(x_k)\\
 % Problem 3 %
 %%%%%%%%
 \section{Multiplicative Cost}
+In the framework of the basic problem, consider the case where the cost has the multiplicative form $$\mathbb{E}_{\{w_k\}}[g_N(x_N) g_{N-1}(x_{N-1}, u_{N-1}, w_{N-1})... g_{0}(x_{0}, u_{0}, w_{0})]$$ assuming that $g_{k}(x_{k}, u_{k}, w_{k}) > 0
+$, for all $x_k$, $u_k$, $w_k$, and $k$. \\
 
 %%%%%%%%
 % Problem 4 %
