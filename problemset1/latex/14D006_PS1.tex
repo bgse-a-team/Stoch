@@ -1,0 +1,108 @@
+\documentclass[11pt, oneside]{article}   	% use "amsart" instead of "article" for AMSLaTeX format
+\usepackage{geometry}                		% See geometry.pdf to learn the layout options. There are lots.
+\geometry{letterpaper}                   		% ... or a4paper or a5paper or ... 
+%\geometry{landscape}                		% Activate for rotated page geometry
+%\usepackage[parfill]{parskip}    		% Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{graphicx}				% Use pdf, png, jpg, or eps§ with pdflatex; use eps in DVI mode
+								% TeX will automatically convert eps --> pdf in pdflatex		
+\usepackage{amssymb}
+\usepackage{amsmath,amsfonts,amsthm} % Math packages
+\usepackage{bm}
+\usepackage{graphicx}
+\usepackage{dsfont}
+\graphicspath{ {images/} }
+
+%SetFonts
+
+%SetFonts
+
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\newcommand{\horrule}[1]{\rule{\linewidth}{#1}} % Create horizontal rule command with 1 argument of height
+
+\title{	
+\normalfont \normalsize 
+\textsc{14D006 Stochastic Models and Optimization} \\ [25pt] % Your university, school and/or department name(s)
+\horrule{0.5pt} \\[0.4cm] % Thin top horizontal rule
+\huge Problemset 1\\ % The assignment title
+\horrule{2pt} \\[0.5cm] % Thick bottom horizontal rule
+}
+
+\author{Daniel Bestard Delgado, Michael Cameron, Hans-Peter H{\"o}llwirth, Akhil Lohia} % Your name
+
+\date{\normalsize\today} % Today's date or a custom date
+
+\begin{document}
+\maketitle
+
+
+%%%%%%%%
+% Problem 1 %
+%%%%%%%%
+\section{Machine Maintenance}
+
+
+%%%%%%%%
+% Problem 2 %
+%%%%%%%%
+\section{Discounted Cost}
+In the framework of the basic problem, consider the case where the cost is of the form $$\mathbb{E}_{\{w_k\}}[\alpha^N g_N(x_N) + \sum_{k=0}^{N-1} \alpha^k g_k(x_k, u_k, w_k)]$$ where $\alpha \in (0,1)$ is a discount factor. \\
+
+Let $J^{'}_{k}$ be the optimal value of the $(N-k)$-tail problem with cost function $g^{'}_N (x_N) = \alpha^N g_N(x_N)$ and $g^{'}_k (x_k) = \alpha^k g_k(x_k, u_k, w_k)$. Then we have
+
+\begin{align} 
+\begin{split}
+J^{'}_N(x_N) &= g^{'}_N (x_N)\\ 
+&= \alpha^N g_N(x_N)\\
+\alpha^{-N} J^{'}_N(x_N) &= g_N(x_N)\\
+\\
+J^{'}_k(x_k) &= \min_{u_k \in U_k(x_k)} \mathbb{E}_{w_k} \big[g^{'}_k(x_k, u_k, w_k) + J^{'}_{k+1}(f_k(x_k, u_k, w_k))\big]\\
+&= \min_{u_k \in U_k(x_k)} \mathbb{E}_{w_k} \big[\alpha^k g_k(x_k, u_k, w_k) + J^{'}_{k+1}(f_k(x_k, u_k, w_k))\big]\\
+\alpha^{-k} J^{'}_k(x_k) &= \min_{u_k \in U_k(x_k)} \mathbb{E}_{w_k} \big[g_k(x_k, u_k, w_k) + \alpha^{-k} J^{'}_{k+1}(f_k(x_k, u_k, w_k))\big]\\
+&= \min_{u_k \in U_k(x_k)} \mathbb{E}_{w_k} \big[g_k(x_k, u_k, w_k) + \alpha \alpha^{-(k+1)} J^{'}_{k+1}(f_k(x_k, u_k, w_k))\big]\\
+\end{split}					
+\end{align} 
+Now let $J_k(x_k) = \alpha^{-k} J^{'} (x_k)$ and so we get the DP-like algorithm
+
+\begin{align} 
+\begin{split}
+J_N(x_N) &= \alpha^{-N} J^{'}(x_N)\\
+&= g_N(x_N)\\
+\\
+J_k(x_k)&= \alpha^{-k} J^{'}(x_k)\\
+&= \min_{u_k \in U_k(x_k)} \mathbb{E}_{w_k} \big[g_k(x_k, u_k, w_k) + \alpha \alpha^{-(k+1)} J^{'}_{k+1}(f_k(x_k, u_k, w_k))\big]\\
+&= \min_{u_k \in U_k(x_k)} \mathbb{E}_{w_k} \big[g_k(x_k, u_k, w_k) + \alpha J_{k+1}(f_k(x_k, u_k, w_k))\big]\\
+\end{split}					
+\end{align} 
+
+%%%%%%%%
+% Problem 3 %
+%%%%%%%%
+\section{Multiplicative Cost}
+
+%%%%%%%%
+% Problem 4 %
+%%%%%%%%
+\section{Knapsack Problem}
+
+%%%%%%%%
+% Problem 5 %
+%%%%%%%%
+\section{Traveling Repairman Problem}
+
+\end{document}  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
