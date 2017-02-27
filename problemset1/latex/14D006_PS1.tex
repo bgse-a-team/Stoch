@@ -4,8 +4,11 @@
 %\geometry{landscape}                		% Activate for rotated page geometry
 %\usepackage[parfill]{parskip}    		% Activate to begin paragraphs with an empty line rather than an indent
 \usepackage{graphicx}				% Use pdf, png, jpg, or eps§ with pdflatex; use eps in DVI mode
-								% TeX will automatically convert eps --> pdf in pdflatex		
+								% TeX will automatically convert eps --> pdf in pdflatex	
+								\usepackage[bb=boondox]{mathalfa}
+\usepackage{mathtools}
 \usepackage{amssymb}
+
 \usepackage{amsmath,amsfonts,amsthm} % Math packages
 \usepackage{bm}
 \usepackage{graphicx}
@@ -28,7 +31,7 @@
 \horrule{2pt} \\[0.5cm] % Thick bottom horizontal rule
 }
 
-\author{Daniel Bestard Delgado, Michael Cameron, Hans-Peter H{\"o}llwirth, Akhil Lohia} % Your name
+\author{Daniel Bestard, Michael Cameron, Hans-Peter H{\"o}llwirth, Akhil Lohia} % Your name
 
 \date{\normalsize\today} % Today's date or a custom date
 
@@ -40,7 +43,112 @@
 % Problem 1 %
 %%%%%%%%
 \section{Machine Maintenance}
+The first step is to identify the variables of the DP algorithm for this specific problem:
+\begin{itemize}
+	\item $x_{k}$: state of the system at period $k$. The possible states of the machine are $x_{k} \in \{Run, Broken\} = \{R,B\}$
+	\item $u_{k}$: decision variables of the system at period $k$. In this problem depending on the state of the machine the decision variable changes. That is, if the machine is running, then we could apply maintenance or not, $u_{k}(R) \in \{\text{maintenance, not maintenance}\} = \{m,n\}$. On the other hand, if the machine is broken, then we could either repair it or replace it, $u_{k}(B) \in \{repair, replace\} = \{r,l\}$.
+	\item $w_{k}$: uncertainty of the system at period $k$. In this problem the uncertainty comes from the fact that we do not know whether the machine will break or not. Therefore, the values of the variable that represents the uncertainty of the system are the possible states of the system at each period. That is, $w_{k} = x_{k} \in \{R,B\}$.
+\end{itemize}
+Once the variables of the problem have been defined the next step when applying the DP algorithm is to find the expression that explains the dynamics of this problem. As explained in the previous paragraph, the state of the machine in the next period is fully specified by the variable that contains the uncertainty of the system. That is,
+$$x_{k+1} = f_{k}(x_{k},u_{k},w_{k}) = w_{k}(x_{k},u_{k})$$
+The previous expression is one of the components of the objective function of the DP algorithm. The other expression to be defined is the one that specifies the gains of each possible situation. This function is:
+\begin{align*}
+g_{k}(x_{k},u_{k},w_{k}) =
+\begin{cases}
+	-20  \, & if \, u_{k}=m,w_{k}=B\\
+	 80  \, & if \, u_{k}=m,w_{k}=R\\
+	 0  \, & if \, u_{k}=n,w_{k}=B\\
+	 100  \, & if \, u_{k}=n,w_{k}=R\\
+	 -40  \, & if \, u_{k}=r,w_{k}=B\\
+	 60  \, & if \, u_{k}=r,w_{k}=R\\
+	 10  \, & if \, u_{k}=l,w_{k}=R\\
+\end{cases}
+\end{align*}
+Note that in the previous function there is one situation that has been omitted, which is when the machine is replaced and breaks, $u_{k}=l,w_{k}=B$. The reason why this option is not included is because it is not possible by construction. As the exercise specifies, if the machine is replaced then it is guaranteed to work for the whole week.\\
 
+The last part to be defined before applying the DP algorithm is the transition probabilities, $p(w_{k}|x_{k},u_{k})$
+\begin{align*}
+P(R|R,m)&=0.6 \quad P(B|R,m)=0.4\\
+P(R|R,n)&=0.3 \quad P(B|R,n)=0.7\\
+P(R|B,r)&=0.6 \quad P(B|B,r)=0.3\\
+P(R|B,l)&=1.0 \quad P(B|B,l)=0.0\\
+\end{align*}
+
+Now we are ready to apply the DP algorithm, which has the following shape:
+\begin{align*}
+J_{N}(x_{N}) &= g_{N}(x_{k})\\
+J_{k}(x_{k}) &= \underset{u_{k} \in U_{k}(x_{k})}{max} \mathbb{E}_{w_{k}} \big[ g_{k}(x_{k},u_{k},w_{k}) + J_{k+1}[f_{k}(x_{k},u_{k},w_{k})]\big]
+\end{align*}
+
+Let's apply the DP algorithm:
+\begin{align*}
+J_{3}(R) &= max \bigg\{ \mathbb{E}_{w_{k}} \big[ g_{3}(R,m,w_{k}) + J_{4}(w_{k}(R,m))], \, \mathbb{E}_{w_{k}} \big[ g_{3}(R,n,w_{k}) + J_{4}(w_{k}(R,n))] \big] \bigg\}\\
+&= max \bigg\{ \big[g_{3}(R,m,R) + J_{4}(R)\big]P(R|R,m) + \big[g_{3}(R,m,B) + J_{4}(B)\big]P(B|R,m),\\
+& \quad \quad \quad \quad \, \big[g_{3}(R,n,R) + J_{4}(R)\big]P(R|R,n) + \big[g_{3}(R,n,B) + J_{4}(B)\big]P(B|R,n) \bigg\}\\
+&= max \big\{ (80+0)0.6+(-20+0)0.4, (100+0)0.3+(0+0)0.7 \big\}\\
+&= max \big\{40,30\}\\
+&= 40\\
+\Aboxed{\mu_{3}(R)&=m}\\
+\end{align*}
+
+\begin{align*}
+J_{3}(B) &= max \bigg\{ \mathbb{E}_{w_{k}} \big[ g_{3}(B,r,w_{k}) + J_{4}(w_{k}(B,r))], \, \mathbb{E}_{w_{k}} \big[ g_{3}(B,l,w_{k}) + J_{4}(w_{k}(B,l))] \big] \bigg\}\\
+&= max \bigg\{ \big[g_{3}(B,r,R) + J_{4}(R)\big]P(R|B,r) + \big[g_{3}(B,r,B) + J_{4}(B)\big]P(B|B,r),\\
+& \quad \quad \quad \quad \, \big[g_{3}(B,l,R) + J_{4}(R)\big]P(R|B,n) \bigg\}\\
+&= max \big\{ (60+0)0.6+(-40+0)0.4, (10+0)1 \big\}\\
+&= max \big\{20,10\}\\
+&= 20\\
+\Aboxed{\mu_{3}(B)&=r}\\
+\end{align*}
+
+\begin{align*}
+J_{2}(R) &= max \bigg\{ \mathbb{E}_{w_{k}} \big[ g_{2}(R,m,w_{k}) + J_{3}(w_{k}(R,m))], \, \mathbb{E}_{w_{k}} \big[ g_{2}(R,n,w_{k}) + J_{3}(w_{k}(R,n))] \big] \bigg\}\\
+&= max \bigg\{ \big[g_{2}(R,m,R) + J_{3}(R)\big]P(R|R,m) + \big[g_{2}(R,m,B) + J_{3}(B)\big]P(B|R,m),\\
+& \quad \quad \quad \quad \, \big[g_{2}(R,n,R) + J_{3}(R)\big]P(R|R,n) + \big[g_{2}(R,n,B) + J_{3}(B)\big]P(B|R,n) \bigg\}\\
+&= max \big\{ (80+40)0.6+(-20+20)0.4, (100+40)0.3+(0+20)0.7 \big\}\\
+&= max \big\{72,56\}\\
+&= 72\\
+\Aboxed{\mu_{2}(R)&=m}\\
+\end{align*}
+
+\begin{align*}
+J_{2}(B) &= max \bigg\{ \mathbb{E}_{w_{k}} \big[ g_{2}(B,r,w_{k}) + J_{3}(w_{k}(B,r))], \, \mathbb{E}_{w_{k}} \big[ g_{2}(B,l,w_{k}) + J_{3}(w_{k}(B,l))] \big] \bigg\}\\
+&= max \bigg\{ \big[g_{2}(B,r,R) + J_{3}(R)\big]P(R|B,r) + \big[g_{2}(B,r,B) + J_{3}(B)\big]P(B|B,r),\\
+& \quad \quad \quad \quad \, \big[g_{2}(B,l,R) + J_{3}(R)\big]P(R|B,n) \bigg\}\\
+&= max \big\{ (60+40)0.6+(-40+20)0.4, (10+40)1 \big\}\\
+&= max \big\{52,50\}\\
+&= 52\\
+\Aboxed{\mu_{2}(B)&=r}\\
+\end{align*}
+
+\begin{align*}
+J_{1}(R) &= max \bigg\{ \mathbb{E}_{w_{k}} \big[ g_{1}(R,m,w_{k}) + J_{2}(w_{k}(R,m))], \, \mathbb{E}_{w_{k}} \big[ g_{1}(R,n,w_{k}) + J_{2}(w_{k}(R,n))] \big] \bigg\}\\
+&= max \bigg\{ \big[g_{1}(R,m,R) + J_{2}(R)\big]P(R|R,m) + \big[g_{1}(R,m,B) + J_{2}(B)\big]P(B|R,m),\\
+& \quad \quad \quad \quad \, \big[g_{1}(R,n,R) + J_{2}(R)\big]P(R|R,n) + \big[g_{1}(R,n,B) + J_{2}(B)\big]P(B|R,n) \bigg\}\\
+&= max \big\{ (80+72)0.6+(-20+52)0.4, (100+72)0.3+(0+52)0.7 \big\}\\
+&= max \big\{104,88\}\\
+&= 104\\\
+\Aboxed{\mu_{1}(R)&=m}\\
+\end{align*}
+
+\begin{align*}
+J_{1}(B) &= max \bigg\{ \mathbb{E}_{w_{k}} \big[ g_{1}(B,r,w_{k}) + J_{2}(w_{k}(B,r))], \, \mathbb{E}_{w_{k}} \big[ g_{1}(B,l,w_{k}) + J_{2}(w_{k}(B,l))] \big] \bigg\}\\
+&= max \bigg\{ \big[g_{1}(B,r,R) + J_{2}(R)\big]P(R|B,r) + \big[g_{1}(B,r,B) + J_{2}(B)\big]P(B|B,r),\\
+& \quad \quad \quad \quad \, \big[g_{1}(B,l,R) + J_{2}(R)\big]P(R|B,n) \bigg\}\\
+&= max \big\{ (60+72)0.6+(-40+52)0.4, (10+72)1 \big\}\\
+&= max \big\{84,82\}\\
+&= 84\\
+\Aboxed{\mu_{1}(B)&=r}\\
+\end{align*}
+
+\begin{align*}
+J_{0}(R) &= g_{0}(R,n,R) + J_{1}(R)\\
+&= 100 + 104\\\
+&= 204\\
+\Aboxed{\mu_{0}(R)&=n}\\
+\end{align*}
+
+The optimal solution at each period for each possible state of the system can be found in the previous boxes. Note that $J_{0}(R)$ has no expectation because there is no uncertainty given that the problem specifies that at the beginning there is a new machine that is guaranteed not to break during the first week. For the same reasoning, it does not make sense to compute $J_{0}(B)$.
 
 %%%%%%%%
 % Problem 2 %
