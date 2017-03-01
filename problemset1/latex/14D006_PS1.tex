@@ -1,10 +1,10 @@
 \documentclass[11pt, oneside]{article}   	% use "amsart" instead of "article" for AMSLaTeX format
 \usepackage{geometry}                		% See geometry.pdf to learn the layout options. There are lots.
-\geometry{letterpaper}                   		% ... or a4paper or a5paper or ... 
+\geometry{letterpaper}                   		% ... or a4paper or a5paper or ...
 %\geometry{landscape}                		% Activate for rotated page geometry
 %\usepackage[parfill]{parskip}    		% Activate to begin paragraphs with an empty line rather than an indent
 \usepackage{graphicx}				% Use pdf, png, jpg, or eps§ with pdflatex; use eps in DVI mode
-								% TeX will automatically convert eps --> pdf in pdflatex	
+								% TeX will automatically convert eps --> pdf in pdflatex
 								\usepackage[bb=boondox]{mathalfa}
 \usepackage{mathtools}
 \usepackage{amssymb}
@@ -23,8 +23,8 @@
 \DeclareMathOperator*{\argmax}{arg\,max}
 \newcommand{\horrule}[1]{\rule{\linewidth}{#1}} % Create horizontal rule command with 1 argument of height
 
-\title{	
-\normalfont \normalsize 
+\title{
+\normalfont \normalsize
 \textsc{14D006 Stochastic Models and Optimization} \\ [25pt] % Your university, school and/or department name(s)
 \horrule{0.5pt} \\[0.4cm] % Thin top horizontal rule
 \huge Problemset 1\\ % The assignment title
@@ -158,9 +158,9 @@ In the framework of the basic problem, consider the case where the cost is of th
 
 Let $J^{*}_{k}$ be the optimal value of the $(N-k)$-tail problem with cost function $g^{*}_N (x_N) = \alpha^N g_N(x_N)$ and $g^{*}_k (x_k) = \alpha^k g_k(x_k, u_k, w_k)$. Then we have
 
-\begin{align} 
+\begin{align}
 \begin{split}
-J^{*}_N(x_N) &= g^{*}_N (x_N)\\ 
+J^{*}_N(x_N) &= g^{*}_N (x_N)\\
 &= \alpha^N g_N(x_N)\\
 \alpha^{-N} J^{*}_N(x_N) &= g_N(x_N)\\
 \\
@@ -168,11 +168,11 @@ J^{*}_k(x_k) &= \min_{u_k \in U_k(x_k)} \mathbb{E}_{w_k} \big[g^{*}_k(x_k, u_k, 
 &= \min_{u_k \in U_k(x_k)} \mathbb{E}_{w_k} \big[\alpha^k g_k(x_k, u_k, w_k) + J^{*}_{k+1}(f_k(x_k, u_k, w_k))\big]\\
 \alpha^{-k} J^{*}_k(x_k) &= \min_{u_k \in U_k(x_k)} \mathbb{E}_{w_k} \big[g_k(x_k, u_k, w_k) + \alpha^{-k} J^{*}_{k+1}(f_k(x_k, u_k, w_k))\big]\\
 &= \min_{u_k \in U_k(x_k)} \mathbb{E}_{w_k} \big[g_k(x_k, u_k, w_k) + \alpha \alpha^{-(k+1)} J^{*}_{k+1}(f_k(x_k, u_k, w_k))\big]\\
-\end{split}					
-\end{align} 
+\end{split}
+\end{align}
 Now let $J_k(x_k) = \alpha^{-k} J^{*} (x_k)$ and so we get the DP-like algorithm
 
-\begin{align} 
+\begin{align}
 \begin{split}
 J_N(x_N) &= \alpha^{-N} J^{*}(x_N)\\
 &= g_N(x_N)\\
@@ -180,8 +180,8 @@ J_N(x_N) &= \alpha^{-N} J^{*}(x_N)\\
 J_k(x_k)&= \alpha^{-k} J^{*}(x_k)\\
 &= \min_{u_k \in U_k(x_k)} \mathbb{E}_{w_k} \big[g_k(x_k, u_k, w_k) + \alpha \alpha^{-(k+1)} J^{*}_{k+1}(f_k(x_k, u_k, w_k))\big]\\
 &= \min_{u_k \in U_k(x_k)} \mathbb{E}_{w_k} \big[g_k(x_k, u_k, w_k) + \alpha J_{k+1}(f_k(x_k, u_k, w_k))\big]\\
-\end{split}					
-\end{align} 
+\end{split}
+\end{align}
 
 %%%%%%%%
 % Problem 3 %
@@ -195,12 +195,33 @@ $, for all $x_k$, $u_k$, $w_k$, and $k$. \\
 %%%%%%%%
 \section{Knapsack Problem}
 
+Given the total capacity of the vessel $z$, consider adding different quantities of the $N$ items sequentially. Hence, at each stage (item) of the problem, the decision variable is the quantity of that item to be loaded on the cargo. Define $z_i$ as the remaining capacity of the vessel before loading item $i$. Hence, $z_0 = z$. Thus, $z_i$ can be considered as the state of the system at each stage. Define $x_i$ to be the quantity of $i^{th}$ item loaded on the vessel. Hence $x_i$ is the control variable in our formulation. As given, $w_i$ is the weight of this item type.
+
+Then we can give the following formulation of our dynamic programming framework:
+
+Dynamics: $z_{i+1} = z_i - x_i w_i$
+Reward: $g_i(z_i, x_i) = x_i v_i$
+Constraints: $X_i(z_i) = \left\{ x_i \in \mathbb{Z}_+ : x_i \leq \frac{z_i}{w_i} \right\}$
+
+We have the terminal condition as follows:
+\[
+J_{N}(z_{N}) = \lfloor{z_N/w_N}\rfloor
+\]
+
+Then we can use the regular DP recursion:
+\[
+J_i(z_i) = \max_{x_i \in X_i} \left\{ x_i v_i + J_{i+1}(z_i - x_i w_i) \right\}
+\]
+
+Using this, we can calculate $J_0$ which will be the most valuable cargo for the vessel with capacity $z$.
+
+
 %%%%%%%%
 % Problem 5 %
 %%%%%%%%
 \section{Traveling Repairman Problem}
 
-\end{document}  
+\end{document}
 
 
 
