@@ -190,6 +190,21 @@ J_k(x_k)&= \alpha^{-k} J^{*}(x_k)\\
 In the framework of the basic problem, consider the case where the cost has the multiplicative form $$\mathbb{E}_{\{w_k\}}[g_N(x_N) g_{N-1}(x_{N-1}, u_{N-1}, w_{N-1})... g_{0}(x_{0}, u_{0}, w_{0})]$$ assuming that $g_{k}(x_{k}, u_{k}, w_{k}) > 0
 $, for all $x_k$, $u_k$, $w_k$, and $k$. \\
 
+Let $\mu_k(x_k) \in U_k(x_k)$ be a policy at period $k$ and let $\pi_k = \{\mu_k, \mu_{k+1},...,\mu_{N-1}\}$. Furthermore, let $x_{k+1}=f(x_k,u_k,w_k)$ be the state transition function. If we assume that the "Principle of Optimality" also holds for multiplicative costs, then we get the following DP-like algorithm:
+
+\begin{align}
+\begin{split}
+J_{N}(x_{N}) &= g_N(x_N)\\
+\\
+J_k(x_k) &= \min_{\pi_k} \mathbb{E}_{\{w_i\}_{i=k}^N}\left[\prod_{i=k}^N g_i(x_i, u_i, w_i)\right]\\
+&= \min_{\pi_k} \mathbb{E}_{\{w_i\}_{i=k}^N}\left[g_k(x_k, u_k, w_k) \prod_{i=k+1}^N g_i(x_i, u_i, w_i)\right]\\
+&= \min_{\pi_k} \mathbb{E}_{\{w_i\}_{i=k}^N}\left[g_k(x_k, u_k, w_k) \prod_{i=k+1}^N g_i(x_i, u_i, w_i)\right]\\
+&= \min_{\mu_k(x_k)} \mathbb{E}_{w_k}\left[g_k(x_k, u_k, w_k) \cdot \min_{\pi_{k+1}} \mathbb{E}_{\{w_i\}_{i=k+1}^N}\left[\prod_{i=k+1}^N g_i(x_i, u_i, w_i)\right]\right]\\
+&= \min_{\mu_k(x_k)} \mathbb{E}_{w_k}\left[g_k(x_k, u_k, w_k) \cdot J_{k+1}(x_{k+1})\right]\\
+&= \min_{u_k \in U_k(x_k)} \mathbb{E}_{w_k}\left[g_k(x_k, u_k, w_k) \cdot J_{k+1}(f(x_k,u_k,w_k))\right]\\
+\end{split}
+\end{align}
+
 %%%%%%%%
 % Problem 4 %
 %%%%%%%%
