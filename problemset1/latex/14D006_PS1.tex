@@ -195,24 +195,23 @@ $, for all $x_k$, $u_k$, $w_k$, and $k$. \\
 %%%%%%%%
 \section{Knapsack Problem}
 
-Given the total capacity of the vessel $z$, consider adding different quantities of the $N$ items sequentially. Hence, at each stage (item) of the problem, the decision variable is the quantity of that item to be loaded on the cargo. Define $z_i$ as the remaining capacity of the vessel before loading item $i$. Hence, $z_0 = z$. Thus, $z_i$ can be considered as the state of the system at each stage. Define $x_i$ to be the quantity of $i^{th}$ item loaded on the vessel. Hence $x_i$ is the control variable in our formulation. As given, $w_i$ is the weight of this item type.\\
-Then we can give the following formulation of our dynamic programming framework:\\
-
-Dynamics: $z_{i+1} = z_i - x_i w_i$\\
-Reward: $g_i(z_i, x_i) = x_i v_i$\\
-Constraints: $X_i(z_i) = \left\{ x_i \in \mathbb{Z}_+ : x_i \leq \frac{z_i}{w_i} \right\}$\\
-
-We have the terminal condition as follows:
-\[
-J_{N}(z_{N}) = \lfloor{z_N/w_N}\rfloor
-\]
-
-Then we can use the regular DP recursion:
-\[
-J_i(z_i) = \max_{x_i \in X_i} \left\{ x_i v_i + J_{i+1}(z_i - x_i w_i) \right\}
-\]
-
-Using this, we can calculate $J_0$ which will be the most valuable cargo for the vessel with capacity $z$.
+Given the total capacity of the vessel $z$, consider adding different quantities of the $N$ items sequentially. Hence, at each stage (item) of the problem, the decision variable is the quantity of that item to be loaded onto the cargo. Define $z_i$ as the remaining capacity of the vessel before loading item $i$. Hence, $z_0 = z$. Thus, $z_i$ can be considered as the state of the system at each stage. Define $x_i$ to be the quantity of the $i^{th}$ item loaded on the vessel. Hence $x_i$ is the control variable in our formulation. As given, $w_i$ is the weight of this item type.\\\\
+Then we can give the following formulation of our dynamic programming framework:
+\begin{itemize}
+\item Dynamics: $z_{i+1} = f(z_i,u_i,w_i) = z_i - u_i w_i$
+\item Reward: $g_i(v_i, u_i) = u_i v_i$
+\item Constraints: $U_i(z_i) = \left\{ u_i \in \mathbb{Z}_+ : u_i \leq \frac{z_i}{w_i} \right\}$
+\end{itemize}
+The DP algorithm formulation looks as follows:
+\begin{align}
+\begin{split}
+J_{N}(z_{N}) &= \lfloor{z_N/w_N}\rfloor
+\\\\
+J_i(z_i) &= \max_{u_i \in U_i} \left\{ g_i(v_i, u_i) + J_{i+1}(f(z_i, u_i, w_i)) \right\}\\
+&= \max_{u_i \in U_i} \left\{ u_i v_i + J_{i+1}(z_i - u_i w_i) \right\}\\
+\end{split}
+\end{align}
+Using this, we can calculate $J_0(z)$ which will be the most valuable cargo for the vessel with capacity $z$.
 
 
 %%%%%%%%
@@ -237,18 +236,18 @@ U_{k}(a_{k},b_{k}) =
 	 a_k - 1  \, & if \, 1 < a_{k},b_{k}=N\\
 \end{cases}
 \end{align*}
+Now we can use the usual DP algorithm:
 
-Now we can use the usual DP algorithm. We have the following terminal condition (where $x_{N+1}$ can be replaced by $x_0$):
-\[
-J_N (x_{N+1}, a_k =1, b_k = N) = 0
-\]
-
-Hence, we use:
-\[
-J_k(x_k, a_k, b_k) = \min_{u_k \in U_k(a_k, b_k)} \left\{ \sum_{i<a_k, i>b_k}c_i + t_{x_k u_k} + J_{k+1} (u_k, \{a_k, b_k\} \cup \{u_k\}) \right\}
-\]
-
-This expression can be used to find the required minimum cost path $J_1(s)$.
+\begin{align}
+\begin{split}
+J_{N}(x_{N}) &= J_N (x_{N}, a_k =1, b_k = N)\\
+&= 0\\
+\\
+J_k(x_k, a_k, b_k) &= \min_{u_k \in U_k(a_k, b_k)} \left\{g_k(x_k,a_k,b_k,u_k) + J_{k+1} (f(x_k, a_k, b_k, u_k) \right\}\\
+&= \min_{u_k \in U_k(a_k, b_k)} \left\{ \sum_{i<a_k, i>b_k}c_i + t_{x_k u_k} + J_{k+1} (u_k, \{a_k, b_k\} \cup \{u_k\}) \right\}\\
+\end{split}
+\end{align}
+This expression can be used to find the required minimum cost path $J_0(s,s,s)$.
 
 \end{document}
 
