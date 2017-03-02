@@ -27,12 +27,6 @@ knitr::opts_chunk$set(echo = FALSE)
 # house cleaning
 rm( list=ls() )
 
-# set working directory
-interactive <- TRUE
-if (interactive) {
-    setwd("/Users/Hans-Peter/Documents/Masters/14D006/problemsets/problemset2/code")
-} 
-
 # load data
 data <- as.data.frame(read.table("../data/TSM_Uruguay.txt", header=FALSE, sep=" "))
 N <- nrow(data)
@@ -55,8 +49,6 @@ distance.matrix <- function(data) {
     }
     return(dm)
 }
-
-dm <- distance.matrix(data)
 ```
 
 ```{r path.length, eval = FALSE, echo = TRUE}
