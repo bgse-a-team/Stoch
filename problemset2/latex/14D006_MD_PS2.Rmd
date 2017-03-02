@@ -1,38 +1,26 @@
-# ----------------------------------------------------------------------
-# Information
-# ----------------------------------------------------------------------
-#
-# 14D006 Stochastic Models and Optimization
-#
-# (Authors) Daniel Bestard Delgado, Michael Cameron, 
-#           Hans-Peter Höllwirth, Akhil Lohia
-# (Date)    03.2017
+---
+title: "Appendix - R Code"
+author: ""
+date: ""
+output: pdf_document
+---
 
-# ----------------------------------------------------------------------
-# Loading data
-# ----------------------------------------------------------------------
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
 
-# house cleaning
-rm( list=ls() )
-
-# set working directory
-interactive <- TRUE
-if (interactive) {
-    setwd("/Users/Hans-Peter/Documents/Masters/14D006/problemsets/problemset2/code")
-} 
-
-# load data
-data <- as.data.frame(read.table("../data/TSM_Uruguay.txt", header=FALSE, sep=" "))
-N <- nrow(data)
-
+ 
+```{r distance, eval = FALSE, echo = TRUE}
 # ----------------------------------------------------------------------
 # Compute distance matrix
 # ----------------------------------------------------------------------
 distance.matrix <- function(data) {
+    # use high dummy value for distance to itself
     dm <- matrix(10000, N, N)
     for (i in 1:N) {
         for (j in 1:N) {
             if (i != j)
+                # Euclidian distance
                 dm[i,j] <- round(sqrt((data[i,2] - data[j,2])**2 + 
                                       (data[i,3] - data[j,3])**2),3)
         }
@@ -41,7 +29,9 @@ distance.matrix <- function(data) {
 }
 
 dm <- distance.matrix(data)
+```
 
+```{r path.length, eval = FALSE, echo = TRUE}
 # ----------------------------------------------------------------------
 # Compute path length
 # ----------------------------------------------------------------------
@@ -49,22 +39,29 @@ path.length <- function(dm, path) {
     length <- 0
     N <- length(path)
     
+    # walk through path and add up distance
     for (i in 2:N) {
         length <- length + dm[path[i-1],path[i]]
     }
     
+    # add distance back to origin
     length <- length + dm[path[N],path[1]]
     return(length)
 }
+```
 
+```{r plot.path, eval = FALSE, echo = TRUE}
 # ----------------------------------------------------------------------
 # Plot path
 # ----------------------------------------------------------------------
 plot.path <- function(data, path) {
     N <- length(path)
+    
+    # plot cities
     par( mar=c(0.5,0.5,0.5,0.5), mfrow=c(1,1) )
     plot(-data[,3:2], type='p', pch=16, cex=0.5, asp=1, xaxt='n', yaxt='n')
 
+    # plot path through cities
     for (i in 2:N) {
         segments(-data[path[i-1],3], -data[path[i-1],2], 
                  -data[path[i],3], -data[path[i],2], col="red")
@@ -72,7 +69,9 @@ plot.path <- function(data, path) {
     segments(-data[path[N],3], -data[path[N],2], 
              -data[path[1],3], -data[path[1],2], col="red")
 }
+```
 
+```{r nn.path, eval = FALSE, echo = TRUE}
 # ----------------------------------------------------------------------
 # Nearest neighbor algorithm
 # ----------------------------------------------------------------------
@@ -102,12 +101,9 @@ nn.path <- function(dm) {
     }
     return(path)
 }
+```
 
-path.nn <- nn.path(dm) 
-path.length(dm, path.nn)
-plot.path(data, path.nn)
-
-
+```{r insertion.path, eval = FALSE, echo = TRUE}
 # ----------------------------------------------------------------------
 # Insertion Heuristics
 # ----------------------------------------------------------------------
@@ -147,12 +143,9 @@ insertion.path <- function(dm) {
     }
     return(path[1:N])
 }
+```
 
-path.insert <- insertion.path(dm) 
-path.length(dm, path.insert)
-plot.path(data, path.insert)
-
-
+```{r two.opt.path, eval = FALSE, echo = TRUE}
 # ----------------------------------------------------------------------
 # 2-opt path improvement
 # ----------------------------------------------------------------------
@@ -181,8 +174,9 @@ two.opt.path <- function(dm, path) {
     }
     return(path[1:(N-1)])
 }
+```
 
-
+```{r run, eval = FALSE, echo = TRUE}
 # ----------------------------------------------------------------------
 # Run path computations and plot solutions
 # ----------------------------------------------------------------------
@@ -209,3 +203,4 @@ plot.path(data, path.nn.2opt)
 path.insert.2opt <- two.opt.path(dm, path.insert)
 path.length(dm, path.insert.2opt)
 plot.path(data, path.insert.2opt)
+```
