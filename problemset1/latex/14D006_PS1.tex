@@ -234,12 +234,10 @@ Using this, we can calculate $J_1(z)$ which will be the most valuable cargo for 
 %%%%%%%%
 \section{Traveling Repairman Problem}
 
-Denote the location of the repairman at the beginning of stage $k$ with $x_k$. Thus, $x_1$ will be $s$, which is the starting location where $1 < s < N$. Let $a_k$ and $b_k$ denote the first and last site respectively which have already been serviced at the beginning of period $k$. Since the repairman only services adjacent sites, $1 \leq a_k \leq b_k \leq N$. Thus, $x_k, a_k$, and $b_k$ together specify the state of the system. The decision variable $u_k$ is the site that will be serviced next. Hence, $x_{k+1} = u_k$.
-
-At each stage, the set of serviced sites increases to include the site serviced in that stage, i.e., either $a_{k+1} = a_k -1$, or $b_{k+1} = b_k +1$.
+Denote the location of the repairman at the beginning of stage $k$ with $x_k$. Thus, $x_1$ will be $s$, which is the starting location where $1 < s < N$. Let $a_k$ and $b_k$ denote the first and last site respectively which have already been serviced at the beginning of period $k$. Since the repairman only services adjacent sites, $1 \leq a_k \leq b_k \leq N$. Thus, $x_k, a_k$, and $b_k$ together specify the state of the system. The decision variable $u_k$ is the site that will be serviced next. Hence, $x_{k+1} = u_k$. At each stage, the set of serviced sites increases to include the site serviced in that stage, i.e., either $a_{k+1} = a_k -1$, or $b_{k+1} = b_k +1$.
 
 The cost of servicing includes the waiting cost $c_i$ for the unserviced sites $i$ and the travel cost from the current site to the next site.
-Thus, cost: $g_k(x_k, a_k, b_k, u_k)=\sum_{i<a_k, i>b_k}c_i + t_{x_k u_k}$. This is based on the fact that the waiting cost includes the cost for all nodes which have not been visited yet and the one that will be visited in this stage.\\
+Thus, cost: $g_k(x_k, a_k, b_k, u_k)=\sum_{i<a_k, i>b_k}c_i + t_{x_k u_k}$. This is based on the fact that the waiting cost includes the cost for all nodes which have not been visited yet (including the one that will be visited in this stage).\\
 
 The constraints in the problem are defined by the sites that can be covered by the repairman given the sites already serviced.
 
@@ -256,8 +254,8 @@ Define $f(x_k,a_k,b_k,u_k)$ as follows:
 \begin{align*}
 f(x_k,a_k,b_k,u_k) =
 \begin{cases}
-	(a_k - 1, b_k, u_k)  \, & if \, u_k = a_{k} - 1 \\
-	 (a_k, b_k + 1, u_k) \, & if \, u_{k}=b_{k} + 1\\
+	(u_k, a_k - 1, b_k)  \, & if \, u_k = a_{k} - 1 \\
+	 (u_k, a_k, b_k + 1) \, & if \, u_{k}=b_{k} + 1\\
 \end{cases}
 \end{align*}
 Now we can use the usual DP algorithm:
