@@ -9,6 +9,34 @@ output: pdf_document
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
+```{r head, eval = FALSE, echo = TRUE}
+# ----------------------------------------------------------------------
+# Information
+# ----------------------------------------------------------------------
+#
+# 14D006 Stochastic Models and Optimization
+#
+# (Authors) Daniel Bestard Delgado, Michael Cameron, 
+#           Hans-Peter Höllwirth, Akhil Lohia
+# (Date)    03.2017
+
+# ----------------------------------------------------------------------
+# Loading data
+# ----------------------------------------------------------------------
+
+# house cleaning
+rm( list=ls() )
+
+# set working directory
+interactive <- TRUE
+if (interactive) {
+    setwd("/Users/Hans-Peter/Documents/Masters/14D006/problemsets/problemset2/code")
+} 
+
+# load data
+data <- as.data.frame(read.table("../data/TSM_Uruguay.txt", header=FALSE, sep=" "))
+N <- nrow(data)
+```
  
 ```{r distance, eval = FALSE, echo = TRUE}
 # ----------------------------------------------------------------------
@@ -150,6 +178,7 @@ insertion.path <- function(dm) {
 # 2-opt path improvement
 # ----------------------------------------------------------------------
 two.opt.path <- function(dm, path) {
+    # (temp) add return to start
     path <- c(path, path[1])
     N <- length(path)
     changes <- TRUE
@@ -160,18 +189,19 @@ two.opt.path <- function(dm, path) {
         
         for (i in 1:(N-3)) {
             for (j in (i+2):(N-1)) {
-                # if alternative path is segment is shorter than current segment
+                # if alternative path segment is shorter than current segment
                 curr.len <- dm[path[i],path[i+1]] + dm[path[j],  path[j+1]]
                 new.len  <- dm[path[i],path[j]]   + dm[path[i+1],path[j+1]]
          
                 if (new.len < curr.len) {
-                    # swap positions
+                    # swap positions and reverse in-between segment
                     path[(i+1):j] <- path[j:(i+1)]
                     changes <- TRUE
                 }
             }
         }
     }
+    # return final path (without return to start)
     return(path[1:(N-1)])
 }
 ```
