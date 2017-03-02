@@ -218,15 +218,15 @@ Then we can give the following formulation of our dynamic programming framework:
 \item Constraints: $U_i(z_i) = \left\{ u_i \in \mathbb{Z}_+ : u_i \leq \frac{z_i}{w_i} \right\}$
 \end{itemize}
 The DP algorithm formulation looks as follows:
-\begin{align}
+\begin{align*}
 \begin{split}
 J_{N}(z_{N}) &= \lfloor{z_N/w_N}\rfloor
 \\\\
 J_i(z_i) &= \max_{u_i \in U_i} \left\{ g_i(v_i, u_i) + J_{i+1}(f(z_i, u_i, w_i)) \right\}\\
 &= \max_{u_i \in U_i} \left\{ u_i v_i + J_{i+1}(z_i - u_i w_i) \right\}\\
 \end{split}
-\end{align}
-Using this, we can calculate $J_0(z)$ which will be the most valuable cargo for the vessel with capacity $z$.
+\end{align*}
+Using this, we can calculate $J_1(z)$ which will be the most valuable cargo for the vessel with capacity $z$.
 
 
 %%%%%%%%
@@ -239,7 +239,7 @@ Denote the location of the repairman at the beginning of stage $k$ with $x_k$. T
 At each stage, the set of serviced sites increases to include the site serviced in that stage, i.e., either $a_{k+1} = a_k -1$, or $b_{k+1} = b_k +1$.
 
 The cost of servicing includes the waiting cost $c_i$ for the unserviced sites $i$ and the travel cost from the current site to the next site.
-Thus, cost: $g_k(x_k, a_k, b_k, u_k)=\sum_{i<a_k, i>b_k}c_i + t_{x_k u_k}$.\\
+Thus, cost: $g_k(x_k, a_k, b_k, u_k)=\sum_{i<a_k, i>b_k}c_i + t_{x_k u_k}$. This is based on the fact that the waiting cost includes the cost for all nodes which have not been visited yet and the one that will be visited in this stage.\\
 
 The constraints in the problem are defined by the sites that can be covered by the repairman given the sites already serviced.
 
@@ -251,17 +251,26 @@ U_{k}(a_{k},b_{k}) =
 	 a_k - 1  \, & if \, 1 < a_{k},b_{k}=N\\
 \end{cases}
 \end{align*}
+
+Define $f(x_k,a_k,b_k,u_k)$ as follows:
+\begin{align*}
+f(x_k,a_k,b_k,u_k) =
+\begin{cases}
+	(a_k - 1, b_k, u_k)  \, & if \, u_k = a_{k} - 1 \\
+	 (a_k, b_k + 1, u_k) \, & if \, u_{k}=b_{k} + 1\\
+\end{cases}
+\end{align*}
 Now we can use the usual DP algorithm:
 
-\begin{align}
+\begin{align*}
 \begin{split}
 J_{N}(x_{N}) &= J_N (x_{N}, a_k =1, b_k = N)\\
 &= 0\\
 \\
-J_k(x_k, a_k, b_k) &= \min_{u_k \in U_k(a_k, b_k)} \left\{g_k(x_k,a_k,b_k,u_k) + J_{k+1} (f(x_k, a_k, b_k, u_k) \right\}\\
-&= \min_{u_k \in U_k(a_k, b_k)} \left\{ \sum_{i<a_k, i>b_k}c_i + t_{x_k u_k} + J_{k+1} (u_k, \{a_k, b_k\} \cup \{u_k\}) \right\}\\
+J_k(x_k, a_k, b_k) &= \min_{u_k \in U_k(a_k, b_k)} \left\{g_k(x_k,a_k,b_k,u_k) + J_{k+1} (f(x_k, a_k, b_k, u_k)) \right\}\\
+&= \min_{u_k \in U_k(a_k, b_k)} \left\{ \sum_{i<a_k, i>b_k}c_i + t_{x_k u_k} + J_{k+1} (f(x_k, a_k, b_k, u_k)) \right\}\\
 \end{split}
-\end{align}
+\end{align*}
 This expression can be used to find the required minimum cost path $J_0(s,s,s)$.
 
 \end{document}
