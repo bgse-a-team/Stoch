@@ -11,6 +11,8 @@
 \usepackage{graphicx}
 \usepackage{dsfont}
 \usepackage{pdfpages}
+\usepackage{caption}
+\usepackage{subcaption}
 \graphicspath{ {images/} }
 
 %SetFonts
@@ -149,7 +151,29 @@ The label correcting algorithm takes the following steps:
 % Problem 5 %
 %%%%%%%%
 \section{TSP Computational Assignment}
+We want to find the shortest tour which visits all 734 cities in Uruguay as provided on the website http://www.math.uwaterloo.ca/tsp/world/countries.html. Due to the large size of the problem the DP algorithm is not applicable in this situation. We therefore rely on several heuristic algorithms which approximate the shortest path (79,114 km). In particular, we implemented the following algorithms:
+\begin{itemize}
+\item Nearest neighbor: Select a random city. Find the nearest unvisited city and go there. Continue as long as there are unvisited cities left. Finally, return to the first city.
+\item Insert heuristics: Start with random initial subtour consisting of 3 cities. Repeatedly, select a city of shortest distance to any of the cities in the subtour but which is not yet itself in the subtour. Find the shortest detour in the subtour to add this city. Repeat until no more cities remain.
+\item 2-Opt Improvement: Take a non-optimal (but valid) path as input. Repeatedly, remove two edges from the tour and reconnect the two paths created (only if the new tour will be shorter). Continue removing and re- connecting the tour until no 2-opt improvements can be found. The tour is now 2-optimal.
+\end{itemize}
 
+The resulting tours are as follows (the associated tours are shown in Figure 1):
+\begin{itemize}
+\item Nearest neighbor: 99,299 km
+\item 2-opt nearest neighbor: 86,430 km
+\item Insert heuristics: 98,752 km
+\item 2-Opt insert heuristcs: 89,168 km
+\end{itemize}
+
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=140mm]{images/path-all.jpeg}
+\caption{top-left: nearest neighbor path, bottom-left: 2-opt nearest neighbor path, top-right: insert heuristics path, bottom-right: 2-opt insert heuristics path}
+\end{figure} 
+
+\newpage
 \includepdf[pages={-}]{14D006_MD_PS2.pdf}
 
 \end{document}  

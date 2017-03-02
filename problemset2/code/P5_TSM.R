@@ -60,17 +60,17 @@ path.length <- function(dm, path) {
 # ----------------------------------------------------------------------
 # Plot path
 # ----------------------------------------------------------------------
-plot.path <- function(data, path) {
+plot.path <- function(data, path, color="red") {
     N <- length(path)
-    par( mar=c(0.5,0.5,0.5,0.5), mfrow=c(1,1) )
+    #par( mar=c(0.5,0.5,0.5,0.5), mfrow=c(1,1) )
     plot(-data[,3:2], type='p', pch=16, cex=0.5, asp=1, xaxt='n', yaxt='n')
 
     for (i in 2:N) {
         segments(-data[path[i-1],3], -data[path[i-1],2], 
-                 -data[path[i],3], -data[path[i],2], col="red")
+                 -data[path[i],3], -data[path[i],2], col=color)
     }
     segments(-data[path[N],3], -data[path[N],2], 
-             -data[path[1],3], -data[path[1],2], col="red")
+             -data[path[1],3], -data[path[1],2], col=color)
 }
 
 # ----------------------------------------------------------------------
@@ -193,19 +193,19 @@ dm <- distance.matrix(data)
 # compute nearest neighbor path
 path.nn <- nn.path(dm) 
 path.length(dm, path.nn)
-plot.path(data, path.nn)
+plot.path(data, path.nn, color="red")
 
 # compute insertion heuristics path
 path.insert <- insertion.path(dm) 
 path.length(dm, path.insert)
-plot.path(data, path.insert)
+plot.path(data, path.insert, color="blue")
 
 # compute 2-opt improved nearest neighbor path
 path.nn.2opt <- two.opt.path(dm, path.nn)
 path.length(dm, path.nn.2opt)
-plot.path(data, path.nn.2opt)
+plot.path(data, path.nn.2opt, color="red")
 
 # compute 2-opt improved insertion heuristics path
 path.insert.2opt <- two.opt.path(dm, path.insert)
 path.length(dm, path.insert.2opt)
-plot.path(data, path.insert.2opt)
+plot.path(data, path.insert.2opt, color="blue")
