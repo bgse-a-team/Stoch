@@ -122,6 +122,25 @@ Again the shortest path is 1-2-5 for the same reasoning as before. Therefore, bo
 %%%%%%%%
 \section{Path Bottleneck Problem}
 
+\begin{itemize}
+	\item $s$: denotes the origin node.
+	\item $t$: denotes the terminal node.
+	\item $\alpha_{ij}$: length from node i to node j.
+	\item $b_{i}$: size of bottleneck in the minimum bottleneck path from s to i.
+	\item $p{i}$: parent of node i.
+	\item $UPPER$: size of bottleneck in the minimum bottleneck path from s to t. It is set to $infty$ as long as the target has not been found.
+	\item $OPEN$: contains nodes that are currently active, which means that it is possible their inclusion for the bottle neck path. Initially it contains the source.
+\end{itemize}
+The label correcting algorithm takes the following steps:
+\begin{enumerate}
+	\item Remove node $i$ from $OPEN$ and for each child $j$ of $i$, execute step 2.
+	\item If $min\{b_{i},\alpha_{ij}\} < min\{d_{j},UPPER\}$, set $b_{j}=min\{b_{i},\alpha_{ij}\}$, and set $i$ to be the parent of $j$. In addition,
+	\begin{enumerate}
+		\item If $j \neq t$, place $j$ in $OPEN$ if it is not already in $OPEN$.
+		\item If $j = t$, set $UPPER$ to be the new value $d_{i}+a_{ij}$ of $d_{t}$
+	\end{enumerate}
+	\item If $OPEN$ is empty, terminate; else go to step 1.
+\end{enumerate}
 %%%%%%%%
 % Problem 5 %
 %%%%%%%%
