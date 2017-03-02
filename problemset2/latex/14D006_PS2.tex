@@ -55,6 +55,61 @@ From node 5: 5
 % Problem 2 %
 %%%%%%%%
 \section{Shortest Path via Label Correcting Methods}
+In order to find the shortest path of the directed graph provided in this exercise we need to apply two algorithms that come from the general framework \textbf{label correcting methods}. Before going into detail it is necessary to provide some notation from this general framework:
+\begin{itemize}
+	\item $i$: denotes the node.
+	\item $j$: denotes the child of $i$.
+	\item $g_{i}$: length of the shortest path found so far.
+	\item $d_{i}+a_{ij}$: length of the shortest path to $i$  found so far followed by arc $(i,j)$.
+	\item $UPPER$: length of the shortest path from the source to the target found so far. It is set to $infty$ as long as the target has not been found.
+	\item $OPEN$: contains nodes that are currently active, which means that it is possible their inclusion for the shortest path. Initially it contains the source.
+\end{itemize}
+The label correcting algorithm takes the following steps:
+\begin{enumerate}
+	\item Remove node $i$ from $OPEN$ and for each child $j$ of $i$, execute step 2.
+	\item If $d_{i}+a_{ij} < min\{d_{j},UPPER\}$, set $d_{j} = d_{i}+a_{ij}$ and set $i$ to be the parent of $j$. In addition,
+	\begin{enumerate}
+		\item If $j \neq t$, place $j$ in $OPEN$ if it is not already in $OPEN$.
+		\item If $j = t$, set $UPPER$ to be the new value $d_{i}+a_{ij}$ of $d_{t}$
+	\end{enumerate}
+	\item If $OPEN$ is empty, terminate; else go to step 1.
+\end{enumerate}
+One of the algorithms that is part of the label correction methods is the \textbf{Bellman-Ford algorithm}. In this algorithm the node is always removed from the top of $OPEN$ and each node entering $OPEN$ is placed at the bottom of $OPEN$. The following table displays the results of this algorithm for each iteration. Note that in the third column there is a number in parenthesis for each path, which corresponds to its length.
+\begin{center}
+\begin{tabular}{ | c | c | c | c | }
+ Iter. & Exiting OPEN & OPEN at the end of iter. & UPPER\\
+ \hline
+ 0 & - & 1 & $\infty$\\
+ 1 & 1 & 1-3(1),1-2(2) & $\infty$\\
+ 2 & 1-2 & 1-2-4(3),1-2-3(3),1-3(1) & 2\\
+ 3 & 1-3 & 1-3-4(4),1-3-2(2),1-2-4(3),1-2-3(3) & 2\\
+ 4 & 1-2-3 & 1-3-4(4),1-3-2(2),1-2-4(3) & 2\\
+ 5 & 1-2-4 & 1-3-4(4),1-3-2(2) & 2\\
+ 6 & 1-3-2 & 1-3-4(4) & 2\\
+ 7 & 1-3-4 & $\emptyset$ & 2\\
+ \end{tabular}
+\end{center}
+
+Just to clarify, note that in the second iteration we reach the target through the path 1-2-5. The length of this path is 2. Given that $j=t$ we set $UPPER$ to be the new value of $d_{t}$ as part b) of the algorithm specifies. The $UPPER$ variable does not get updated anymore because we do not find any other path that goes from the source to the target that has length smaller than 2. Therefore, the shortest path is 1-2-5.\\
+
+The other algorithm that belongs to the label correction methods is called \textbf{Dijkstra's algorithm}. It is very similar to the previous one, but at each iteration it removes from $OPEN$ a node with the minimum value of the label instead of removing the right (top) most node of $OPEN$. The results of the algorithms are:
+
+\begin{center}
+\begin{tabular}{ | c | c | c | c | }
+ Iter. & Exiting OPEN & OPEN at the end of iter. & UPPER\\
+ \hline
+ 0 & - & 1 & $\infty$\\
+ 1 & 1 & 1-3(1),1-2(2) & $\infty$\\
+ 2 & 1-3 & 1-2(2),1-3-2(2),1-3-4(4) & $\infty$\\
+ 3 & 1-2 & 1-2-3(3),1-3-2(2),1-3-4(4) & 2\\
+ 4 & 1-3-2 & 1-2-3(3),1-3-4(4) & 2\\
+ 5 & 1-2-3 & 1-3-4(4) & 2\\
+ 6 & 1-3-4 & $\emptyset$ & 2\\
+ \end{tabular}
+\end{center}
+
+Again the shortest path is 1-2-5 for the same reasoning as before. Therefore, both algorithms reach the same outcome in this case.
+
 
 %%%%%%%%
 % Problem 3 %
