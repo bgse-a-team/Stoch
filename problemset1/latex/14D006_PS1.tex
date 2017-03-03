@@ -210,7 +210,7 @@ J_k(x_k) &= \min_{\pi_k} \mathbb{E}_{\{w_i\}_{i=k}^N}\left[\prod_{i=k}^N g_i(x_i
 %%%%%%%%
 \section{Knapsack Problem}
 
-Given the total capacity of the vessel $z$, consider adding different quantities of the $N$ items sequentially. Hence, at each stage (item) of the problem, the decision variable is the quantity of that item to be loaded onto the cargo. Define $z_i$ as the remaining capacity of the vessel before loading item $i$. Hence, $z_0 = z$. Thus, $z_i$ can be considered as the state of the system at each stage. Define $x_i$ to be the quantity of the $i^{th}$ item loaded on the vessel. Hence $x_i$ is the control variable in our formulation. As given, $w_i$ is the weight of this item type.\\\\
+Given the total capacity of the vessel $z$, consider adding different quantities of the $N$ items sequentially. Hence, at each stage (item) of the problem, the decision variable is the quantity of that item to be loaded onto the cargo. Define $z_i$ as the remaining capacity of the vessel before loading item $i$. Hence, $z_1 = z$. Thus, $z_i$ can be considered as the state of the system at each stage. Define $x_i$ to be the quantity of the $i^{th}$ item loaded on the vessel. Hence $x_i$ is the control variable in our formulation. As given, $w_i$ is the weight of this item type.\\\\
 Then we can give the following formulation of our dynamic programming framework:
 \begin{itemize}
 \item Dynamics: $z_{i+1} = f(z_i,u_i,w_i) = z_i - u_i w_i$

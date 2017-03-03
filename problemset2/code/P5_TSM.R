@@ -167,14 +167,62 @@ two.opt.path <- function(dm, path) {
         
         for (i in 1:(N-3)) {
             for (j in (i+2):(N-1)) {
-                # if alternative path is segment is shorter than current segment
+                # if alternative path segment is shorter than current segment
                 curr.len <- dm[path[i],path[i+1]] + dm[path[j],  path[j+1]]
                 new.len  <- dm[path[i],path[j]]   + dm[path[i+1],path[j+1]]
          
                 if (new.len < curr.len) {
-                    # swap positions
+                    # swap positions and reverse in-between segment
                     path[(i+1):j] <- path[j:(i+1)]
                     changes <- TRUE
+                }
+            }
+        }
+    }
+    return(path[1:(N-1)])
+}
+
+# ----------------------------------------------------------------------
+# 3-opt path improvement
+# ----------------------------------------------------------------------
+three.opt.path <- function(dm, path) {
+    path <- c(path, path[1])
+    N <- length(path)
+    changes <- TRUE
+    
+    # keep updating path until it is 3-opt path
+    while (changes) {
+        changes <- FALSE
+        
+        for (i in 1:(N-5)) {
+            for (j in (i+2):(N-3)) {
+                for (k in (j+2):(N-1)) {
+                    # if one of 2 possible alternative path segments is shorter than current segment
+                    curr.len <- dm[path[i],path[i+1]] + 
+                                dm[path[j],path[j+1]] + 
+                                dm[path[k],path[k+1]]
+                    alt1.len <- dm[path[i],path[j+1]] + 
+                                dm[path[j],path[k+1]] + 
+                                dm[path[k],path[i+1]]
+                    alt2.len <- dm[path[i],path[j]]   + 
+                                dm[path[i+1],path[k]] + 
+                                dm[path[j+1],path[k+1]]
+                    
+                    # if alternative 1 is best
+                    if (alt1.len < min(curr.len, alt2.len)) {
+                        # swap positions of inner-segments
+                        path[(i+1):k] <- c(path[(j+1):k], path[(i+1):j])
+                        changes <- TRUE
+                        print(paste("swap",path.length(dm,path[1:(N-1)])))
+                        
+                    # if alternative 2 is best    
+                    } else if (alt2.len < min(curr.len, alt1.len)) {
+                        # reverse order of (i+1)-j and (j+1)-k segments
+                        path[(i+1):j] <- path[j:(i+1)]
+                        path[(j+1):k] <- path[k:(j+1)]
+                        changes <- TRUE
+                        print(paste("reverse",path.length(dm,path[1:(N-1)])))
+                    }
                 }
             }
         }
@@ -209,3 +257,13 @@ plot.path(data, path.nn.2opt, color="red")
 path.insert.2opt <- two.opt.path(dm, path.insert)
 path.length(dm, path.insert.2opt)
 plot.path(data, path.insert.2opt, color="blue")
+
+# compute 2-opt improved nearest neighbor path
+path.nn.3opt <- three.opt.path(dm, path.nn.2opt)
+path.length(dm, path.nn.3opt)
+plot.path(data, path.nn.3opt, color="red")
+
+# compute 2-opt improved insertion heuristics path
+path.insert.2opt <- two.opt.path(dm, path.insert)
+path.length(dm, path.insert.3opt)
+plot.path(data, path.insert.3opt, color="blue")
