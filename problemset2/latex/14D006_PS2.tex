@@ -122,7 +122,16 @@ Again the shortest path is 1-2-5 for the same reasoning as before. Therefore, bo
 % Problem 3 %
 %%%%%%%%
 \section{Clustering}
+First of all let's find the shortest path counterpart of the clustering problem. Note that we want to construct clusters that consist of consecutive objects where the number of objects is $N$. This can be seen as a shortest path problem by growing a binary tree in the following way. Let the first object represent the source node of the tree. At every node we can close the set (make a cluster) or keep of adding objects to the current (open) cluster. The cost of the edge of the option that keeps the cluster open is 0 because we still do not know how many objects will compose the cluster. Therefore, the cost of the edges of the tree is non-zero only when a cluster has been formed, that is, when the set is closed before and that have to be closed at this stage. At the end of the tree we add an artificial node that represents the target. The edges that reach this node will have the costs of the clusters that had not been closed. Therefore, finding the optimal cluster is just a matter is finding the shortest path of this binary tree.\\
 
+Let's now set the basis of the DP algorithm that is able to deal with this shortest path problem. The first thing to note is that this is a deterministic problem because there is no uncertainty about the state of the system after taking any action. Therefore, the DP algorithm is simply composed of two variables: the state of the system at period $k$, $x_{k}$, and the control variable at period $k$, $u_{k}$. In this specific problem the control variable represent two possible action: new set and add to the set. The first action corresponds to the situation where the object of the next node is added to the a new cluster because at this stage we have just closed a cluster. On the other hand, the second action refers to the situation where the new discovered node is added to the previous open cluster (then, the cluster is not closed after adding this new object). Also note that the state of the system at the next period depends on the decision we made in the previous one. The mathematical summary of this explanation is:
+$$x_{k+1} = u_{k} \quad where \quad u_{k} \in \{\text{new set, add to the set}\}$$
+Finally, the objective function of the DP algorithm is
+\begin{align*}
+J_{N}(x_{N}) &= g_{N}(x_{N})\\
+J_{k}(x_{k}) &= min \, \, \big\{g_{k}(x_{k},u_{k}^{1}) + J_{k+1}(x_{k+1}),\, \, g_{k}(x_{k},u_{k}^{2}) + J_{k+1}(x_{k+1})\big\}
+\end{align*} 
+where $g_{k}(x_{k},u_{k}^{1})$ corresponds to the cost of the current clusters when the decision we made at period $k$ is to make a new set (close cluster). Likewise, $g_{k}(x_{k},u_{k}^{2})$ corresponds to the cost of the current clusters when the decision we made at period $k$ is to add to the set (keeping open the current cluster).
 
 %%%%%%%%
 % Problem 4 %
