@@ -46,7 +46,11 @@
 
 
 \includegraphics[width=14cm, height=8cm]{Plot2.png} \\
-Using the DP algorithm as discussed in class we find the above graph. Hence the shortest path from each node to node 6 is as follows: \\
+To solve this problem we used the DP set up, where \\
+$J_{N-1}(i) = a_{it}, \quad i=1,2,...,N$ \\
+$J_{k}(i) = min_{j=1,2,...,6}[a_{ij}+J_{k+1}(j)], \quad k=1,2,...,N-2$  \\
+
+\noindent For example, in this graph, we have $J_{4}(2) = 2$, then following the algorithm \\ $J_{3}(2) = min_{j=1,2,...,6}[a_{2j}+2]=3$. Using this DP algorithm for each node recursively, as discussed in class we find the above graph. Hence the shortest path from each node to node 6 is as follows: \\
 From node 1: 7 \\
 From node 2: 3 \\
 From node 3: 9 \\
