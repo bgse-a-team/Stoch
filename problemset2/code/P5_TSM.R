@@ -62,7 +62,7 @@ path.length <- function(dm, path) {
 # ----------------------------------------------------------------------
 plot.path <- function(data, path, color="red") {
     N <- length(path)
-    #par( mar=c(0.5,0.5,0.5,0.5), mfrow=c(1,1) )
+    par( mar=c(0.5,0.5,0.5,0.5), mfrow=c(1,1) )
     plot(-data[,3:2], type='p', pch=16, cex=0.5, asp=1, xaxt='n', yaxt='n')
 
     for (i in 2:N) {
@@ -258,12 +258,12 @@ path.insert.2opt <- two.opt.path(dm, path.insert)
 path.length(dm, path.insert.2opt)
 plot.path(data, path.insert.2opt, color="blue")
 
-# compute 2-opt improved nearest neighbor path
+# compute 3-opt improved nearest neighbor path
 path.nn.3opt <- three.opt.path(dm, path.nn.2opt)
 path.length(dm, path.nn.3opt)
 plot.path(data, path.nn.3opt, color="red")
 
-# compute 2-opt improved insertion heuristics path
-path.insert.2opt <- two.opt.path(dm, path.insert)
+# compute 3-opt improved insertion heuristics path
+path.insert.3opt <- three.opt.path(dm, path.insert.2opt)
 path.length(dm, path.insert.3opt)
 plot.path(data, path.insert.3opt, color="blue")
