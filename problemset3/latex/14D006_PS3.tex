@@ -87,6 +87,62 @@ This result means that the expected optimal cost of the decentralized system is 
 % Problem 3 %
 %%%%%%%%
 \section{An Investment Problem}
+We want to find the optimal investment strategy in a situation where the investor can make $N$ sequential investment decisions, each resulting in one of two possible outcomes: Either (1) the invested money doubles (with probability $1/2 < p < 1$, or (2) the invested money is lost (with probability $1-p$). \\
+
+Let $x_k$ denote the wealth at time $k$ (initial wealth $x_0$), let $u_k \in U_k(x_k) = [0, x_k]$ be the investment (decision) at time $k$ and let 
+$$
+w_k(u_k) = 
+\begin{cases} 
+2 u_k & \text{ with probability } p\\
+0 & \text{ with probability } (1-p)\\
+\end{cases}
+$$
+be the outcome of the investment at time $k$. 
+
+First, note that the state transition has the following form:
+$$
+x_{k+1} = f(x_k,u_k,w_k) = x_k - u_k + w_k = 
+\begin{cases} 
+x_k + u_k & \text{ with probability } p\\
+x_k - u_k & \text{ with probability } (1-p)\\
+\end{cases}
+$$ 
+
+The DP algorithm has the form (note that we can consider the logarithm of the investor's wealth after the $N^{th}$ investment as the objective function without changing the optimal strategy):
+
+\begin{align*}
+J_N(x_N) &= \ln(x_N)\\
+\\
+J_k(x_k) &=  \max_{u_k \in U_k(x_k)} \mathbb{E}_{w_k} \left[ J_{k+1} (x_{k+1}) \right]\\
+&=  \max_{u_k \in U_k(x_k)} \left[ p J_{k+1} (x_k + u_k) + (1-p) J_{k+1} (x_k - u_k)\right]\\
+\end{align*}
+
+We want to find the strategy that yields the maximum expected wealth at time $N$, given initial wealth $x_0$: $J_0(x_0)$. \\ First, consider the optimal strategy for a one-period investment horizon, i.e. $J_0(x_0) = J_{N-1}(x_{N-1}) = \max_{u_k \in U_k(x_k)} \left[ p \ln (x_k + u_k) + (1-p) \ln (x_k - u_k)\right]$. We can find the optimal investment strategy $u_{N-1}^*$ using first-order conditions:
+
+\begin{align*}
+\frac{\partial}{\partial u_{N-1}} J_{N-1}(x_{N-1}) &= 0\\
+\frac{\partial}{\partial u_{N-1}} \left[ p \ln (x_{N-1} + u_{N-1}) + (1-p) \ln (x_{N-1} - u_{N-1})\right] &= 0\\
+\frac{p}{x_{N-1} + u_{N-1}^*} - \frac{1-p}{x_{N-1} - u_{N-1}^*} &= 0\\
+p(x_{N-1} - u_{N-1}^*) &= (1-p)(x_{N-1} + u_{N-1}^*)\\
+u_{N-1}^* &= (2p-1)x_{N-1}\\
+\end{align*}
+
+It follows that $J_{N-1}(x_{N-1})$ has the form:
+\begin{align*}
+J_{N-1}(x_{N-1}) &=  \max_{u_{N-1}} \mathbb{E}_{w_{N-1}} \left[\ln J_{N} (x_{N}) \right]\\
+&=  \max_{u_{N-1}} \left[ p \ln (x_{N-1} + u_{N-1}) + (1-p) \ln (x_{N-1} - u_{N-1})\right]\\
+&=  p \ln (x_{N-1} + (2p-1)x_{N-1}) + (1-p) \ln (x_{N-1} - (2p-1)x_{N-1})\\
+&=  p \ln (2p \cdot x_{N-1}) + (1-p) \ln ((2-2p) \cdot x_{N-1})\\
+&=  p \ln (2p) + \ln(x_{N-1}) + (1-p) \ln (2-2p) + \ln(x_{N-1})\\
+&=  p \ln (2p) - p\ln (2-2p) + \ln (2-2p) + \ln(x_{N-1})\\
+&=  A_{N-1} + \ln(x_{N-1})\\
+\end{align*}
+where $A_{N-1} = p \ln (2p) - p\ln (2-2p) + \ln (2-2p)$ is independent of $x_{N-1}$. We see that $J_{N-1}(x_{N-1})$ contains the term $\ln(x_{N-1})$ and so the optimal strategy (known as "Kelly strategy") generalizes to all $k=0,1,..,(N-1)$ in the multi-period problem:
+$$u_{k}^* = (2p-1)x_{k}$$
+and therefore $J_k(x_k) = A_{k} + \ln(x_{k})$ for some $A_K$ independent of $x_k$.
+
+
+
 
 
 %%%%%%%%
