@@ -149,7 +149,73 @@ and therefore $J_k(x_k) = A_{k} + \ln(x_{k})$ for some $A_K$ independent of $x_k
 % Problem 4 %
 %%%%%%%%
 \section{Asset Selling with Maintenance Cost}
+Let's start by setting some notation. Let $w_{0},w_{1},...,w_{N_1}$ be the offers the household gets. Given that the problem does not specify anything about investing the money from selling the house we will assume that such money does not get any interest rate from any possible investment. Let $T$ denote the terminate state. Let $x_{k} = T$ at some time $k \leq N-1$ denote that the house has already been sold. Likewise, let $x_{k} \neq T$ at some time $k \leq N-1$ denote that the house has not been sold yet.\\
 
+Let's now identify the variables that define the DP algorithm that we will used in this exercise:
+\begin{itemize}
+	\item $x_{k}$: state of the system at period $k$, which is the amount of money that the household gets at such period.
+	\item $u_{k}$: control variable at period $k$. In this case the household can take two action: sell or not sell. That is $u_{k} \in \{u_{k}^{1}\text{(sell)}, u_{k}^{2}\text{(not sell)}\}$
+	\item $w_{k}$: uncertainty at time $k$, which corresponds to the offers.
+\end{itemize}
+Taking into account the fact that the rejects offers can be accepted in the future, the dynamics of the DP algorithm are:
+$$x_{k+1} = max(x_{k},w_{k})$$
+and the reward function is
+$$\underset{w_{k}}{\mathbb{E}} \bigg\{g_{N}(x_{N}) + \sum_{k=0}^{N-1} g_{k}(x_{k},u_{k},w_{k})\bigg\}$$
+where
+$$g_{N}(x_{N}) = \begin{cases}
+				x_{N} \, \, & if \, \, x_{N} \neq T\\
+				0 \, \,  & otherwise
+			   \end{cases}
+$$
+$$g_{k}(x_{k},u_{k},w_{k}) = \begin{cases}
+						x_{N} \, \, & if \, \, x_{N} \neq T \, \, and \, \, u_{k} = u^{1}\\
+						-c \, \, & if \, \, x_{N} \neq T \, \, and \, \, u_{k} = u^{2}\\
+				0 \, \,  &  if \, \, x_{N} = T
+			   \end{cases}
+$$
+Therefore, the DP algorithm is,
+$$J_{N}(x_{N}) = \begin{cases}
+				x_{N} \, \, & if \, \, x_{N} \neq T\\
+				0 \, \,  & otherwise
+			   \end{cases}
+$$
+\begin{align*}
+J_{k}(x_{k}) &= 
+\begin{cases}
+				\underset{u_{k} \in U_{k}(x_{k})}{max} \underset{w_{k}}{\mathbb{E}} \big\{g_{k}(x_{k},u_{k},w_{k}) + J_{k+1}(x_{k+1})\big\} \, \, & if \, \, x_{N} \neq T\\
+				0 \, \,  & if \, \, x_{N} = T
+			   \end{cases}\\
+			   &= 
+\begin{cases}
+				max \underset{w_{k}}{\mathbb{E}} \big\{g_{k}(x_{k},u_{k}^{1},w_{k}) + J_{k+1}(x_{k+1}), \, g_{k}(x_{k},u_{k}^{2},w_{k}) + J_{k+1}(x_{k+1})\big\} \, \, & if \, \, x_{N} \neq T\\
+				0 \, \,  & if \, \, x_{N} = T
+			   \end{cases}\\
+			   &=
+\begin{cases}
+				max\big\{\text{Revenue from selling, Expected revenue from not selling}\}\big\} \, \, & if \, \, x_{N} \neq T\\
+				0 \, \,  & if \, \, x_{N} = T
+			   \end{cases}\\
+			   &=
+			   \begin{cases}
+				max\big\{x_{k} + 0,\underset{w_{k}}{\mathbb{E}}\{J_{k+1}(w_{k})-c\}\big\} \, \, & if \, \, x_{N} \neq T\\
+				0 \, \,  & if \, \, x_{N} = T
+			   \end{cases}
+\end{align*}
+This leads to the one-stopping set of the following form:
+\begin{align*}
+T_{N-1} &= \big\{x | x > \underset{w_{k}}{\mathbb{E}} (J_{N}(x_{N}) - c)\big\}\\
+&= \big\{x | x > \underset{w_{k}}{\mathbb{E}} (max(x_{N-1},w_{N-1}) - c)\big\}\\
+&= \big\{x | x >  \sum_{j=1}^{n} p_{j} max(x_{N-1},w_{j,N-1}) - c\big\}\\
+&= \big\{x | x >  \sum_{j=1}^{n} p_{j} max(x,w_{j}) - c\big\}\\
+\end{align*}
+Note that the last line of the previous mathematical development comes from the fact that the function $\sum_{j=1}^{n} p_{j} max(x_{N-1},w_{j,N-1}) - c$ is non-increasing which implies that $T_{N-1}$ is absorbing in the sense that if a state belongs to $T_{N-1}$ and termination is not selected, then the next state will also be in $T_{N-1}$. If we define $\bar{\alpha}$ to be
+$$\bar{\alpha} = \sum_{j=1}^{n} p_{j} max(x,w_{j}) - c$$
+then the optimal policy is defined by,
+$$\mu_{k}^{*}(x_{N}) = \begin{cases}
+				u^{1} \, \, & if \, \, x_{N} > \bar{\alpha}\\
+				u^{2} \, \, & if \, \, x_{N} < \bar{\alpha}\\
+			   \end{cases}
+$$
 
 %%%%%%%%
 % Problem 5 %
