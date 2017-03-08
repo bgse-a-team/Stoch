@@ -155,7 +155,29 @@ and therefore $J_k(x_k) = A_{k} + \ln(x_{k})$ for some $A_K$ independent of $x_k
 % Problem 5 %
 %%%%%%%%
 \section{Scheduling Problem}
-
+(a) \\
+We solve this problem using list indexing. Let $L$ be the optimal order of answering the questions. Let $i$ and $j$ be the $k^{th}$ and $(k + 1)^{st}$ questions in the optimally ordered list L.
+$$
+L = (i_{0},...,i_{k-1},i,j,i_{k+2},...,i_{N-1})
+$$
+We can then calculate the expected return for answering the questions in this order.
+\begin{align*}
+\mathbb{E}[{reward~of~L}] = & \mathbb{E} [reward~of~\{i_{0},...,i_{k-1}\}] \\
++ & p_{i_{0}}···p_{i_{k-1}} p_{i}(R_{i}+p_{j}R_{j} -(1-p_{j})F_{j})-(1-p_{i})F_{i}  \\
++ & p_{i_{0}} ···p_{i_{k}} p_{i}p_{j} \mathbb{E}[reward~of~\{i_{k+2},...,i_{N-1}\}] \\
+\end{align*}
+Now we consider the is were quiestions $i$ and $j$ are interchanged.
+$$
+L^{\prime} = (i_{0},...,i_{k-1},j,i,i_{k+2},...,i_{N-1})
+$$
+Since $L$ is optimal, $\mathbb{E}[{reward~of~L}] \geq \mathbb{E}[{reward~of~L^{\prime}}]$
+This is equivalent to 
+\begin{align*}
+p_{i}(R_{i}+p_{j}R_{j} -(1-p_{j})F_{j})-(1-p_{i})F_{i} &\geq p_{j}(R_{j}+p_{i}R_{i} -(1-p_{i})F_{i})-(1-p_{j})F_{j} \\
+\implies \frac{p_{i}R_{i}-(1-p_{i})F_{i}}{1-p_{i}} &\geq \frac{p_{j}R_{j}-(1-p_{j})F_{j}}{1-p_{j}}
+\end{align*}
+So questions should be answered in order of decreasing $\frac{p_{i}R_{i}-(1-p_{i})F_{i}}{1-p_{i}}$
+(b)
 \end{document}
 
 
