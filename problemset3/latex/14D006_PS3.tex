@@ -158,7 +158,10 @@ Let's now identify the variables that define the DP algorithm that we will used 
 	\item $w_{k}$: uncertainty at time $k$, which corresponds to the offers.
 \end{itemize}
 Taking into account the fact that the rejects offers can be accepted in the future, the dynamics of the DP algorithm are:
-$$x_{k+1} = max(x_{k},w_{k})$$
+$$x_{k+1} = \begin{cases}
+T & if \, \, x_{k}=T, \, \, or \, \, if \, \, x_{k} \neq T \, \, and \, \, u_{k}=u^{1}\\
+max(x_{k},w_{k}) & otherwise
+\end{cases}$$
 and the reward function is
 $$\underset{w_{k}}{\mathbb{E}} \bigg\{g_{N}(x_{N}) + \sum_{k=0}^{N-1} g_{k}(x_{k},u_{k},w_{k})\bigg\}$$
 where
@@ -168,7 +171,7 @@ $$g_{N}(x_{N}) = \begin{cases}
 			   \end{cases}
 $$
 $$g_{k}(x_{k},u_{k},w_{k}) = \begin{cases}
-						x_{N} \, \, & if \, \, x_{N} \neq T \, \, and \, \, u_{k} = u^{1}\\
+						x_{k} \, \, & if \, \, x_{N} \neq T \, \, and \, \, u_{k} = u^{1}\\
 						-c \, \, & if \, \, x_{N} \neq T \, \, and \, \, u_{k} = u^{2}\\
 				0 \, \,  &  if \, \, x_{N} = T
 			   \end{cases}
@@ -211,9 +214,9 @@ T_{N-1} &= \big\{x | x > \underset{w_{k}}{\mathbb{E}} (J_{N}(x_{N}) - c)\big\}\\
 Note that the last line of the previous mathematical development comes from the fact that the function $\sum_{j=1}^{n} p_{j} max(x_{N-1},w_{j,N-1}) - c$ is non-increasing which implies that $T_{N-1}$ is absorbing in the sense that if a state belongs to $T_{N-1}$ and termination is not selected, then the next state will also be in $T_{N-1}$. If we define $\bar{\alpha}$ to be
 $$\bar{\alpha} = \sum_{j=1}^{n} p_{j} max(x,w_{j}) - c$$
 then the optimal policy is defined by,
-$$\mu_{k}^{*}(x_{N}) = \begin{cases}
-				u^{1} \, \, & if \, \, x_{N} > \bar{\alpha}\\
-				u^{2} \, \, & if \, \, x_{N} < \bar{\alpha}\\
+$$\mu_{k}^{*}(x_{k}) = \begin{cases}
+				u^{1} \, \, & if \, \, x_{k} > \bar{\alpha}\\
+				u^{2} \, \, & if \, \, x_{k} < \bar{\alpha}\\
 			   \end{cases}
 $$
 
