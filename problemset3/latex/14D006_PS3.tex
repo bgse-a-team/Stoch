@@ -44,21 +44,40 @@
 %%%%%%%%
 \section{Inventory Control with Forecasts}
 
+\subsection{Part (a)}
+In the standard news-vendor problem, the inventory manager has to minimise $G(Q)$ with the optimal $Q^{\star}$ when the random demand is $D$. With selling price per unit $p$, cost per unit $c$ and salvage value per unit $s$, we define it as:
+\[
+G(Q) =(p-c) \mathbb{E}[(D-Q)^+] + (c-s)\mathbb{E}[(Q-D)^+] =b \mathbb{E}[(D-Q)^+] + h\mathbb{E}[(Q-D)^+]
+\]
+Following the discussion in class, the optimal inventory decision $Q^{\star}$ must satisfy $F(Q^{\star}) = \frac{b}{b+h}$, where $F$ is the demand distribution.
+However, in this problem, the demand distribution depends on the forecast $y \in \{l, s\}$. Hence, the manager will make his decision for the optimal policy based on $y$.
+
+\begin{align*}
+Q^{\star}(y) =
+\begin{cases}
+F_l^{-1} \left( \frac {b}{b+h}\right) & \text{if }y=l\\
+F_s^{-1} \left( \frac {b}{b+h}\right) & \text{if }y=s\\
+\end{cases}
+\end{align*}
+
+Since the optimal decision of the manager depends on the accurate forecast of the probability distribution of the demand, this policy will be considered as a closed loop policy.
+
+\subsection{Part (b)}
 
 %%%%%%%%
 % Problem 2 %
 %%%%%%%%
 \section{Inventory Pooling}
-We want to compare the optimal expected cost between a decentralized and a pooled inventory system with $n$ locations. Let the demand at each location $i$ be independently, normally distributed with mean $\mu$ and variance $\sigma^2$, i.e. $D_1,...D_N \stackrel{iid}{\sim} N(\mu, \sigma^2)$. Then $\sum_{i=1}^N D_i \stackrel{d}{=} \sqrt{n}D_1 + \mu (n-\sqrt{n})$. \\
+We want to compare the optimal expected cost between a decentralized and a pooled inventory system with $n$ locations. Let the demand at each location $i$ be independently, normally distributed with mean $\mu$ and variance $\sigma^2$, i.e. $D_1,...D_n \stackrel{iid}{\sim} N(\mu, \sigma^2)$. Then $\sum_{i=1}^n D_i \stackrel{d}{=} \sqrt{n}D_1 + \mu (n-\sqrt{n})$. \\
 
 
 Let $h$ and $b$ denote the inventory holding cost and backorder cost, respectively. We already know that if $G(Q^*) = \mathbb{E}_D[h(Q^*-D)_+ + b(D-Q^*)_+]$ denotes the optimal expected cost for each location (with optimal order quantity $Q^* = \inf \left\{ Q \geq 0: \mathbb{P}\left(D_1 \leq Q \right) \geq \frac{b}{b+h} \right\}$), then the optimal expected cost in the decentralized inventory system is
-$$G_D(Q^*) = \sum_{i=1}^N G(Q^*) = n G(Q^*)$$
+$$G_D(Q^*) = \sum_{i=1}^n G(Q^*) = n G(Q^*)$$
 
-To find the optimal expected cost in the pooled inventory system $G_P(Q_P^*)$, we first need to determine the optimal order quantity $Q_P^*$ under this system. 
+To find the optimal expected cost in the pooled inventory system $G_P(Q_P^*)$, we first need to determine the optimal order quantity $Q_P^*$ under this system.
 
 \begin{align*}
-Q_P^* &=  \inf \left\{ Q \geq 0: \mathbb{P}\left( \sum_{i=1}^N D_i \leq Q \right) \geq \frac{b}{b+h} \right\}\\
+Q_P^* &=  \inf \left\{ Q \geq 0: \mathbb{P}\left( \sum_{i=1}^n D_i \leq Q \right) \geq \frac{b}{b+h} \right\}\\
 &=  \inf \left\{ Q \geq 0: \mathbb{P}\left( \sqrt{n}D_1 + \mu (n-\sqrt{n}) \leq Q \right) \geq \frac{b}{b+h} \right\}\\
 &=  \inf \left\{ \sqrt{n}X + \mu (n-\sqrt{n}) \geq 0: \mathbb{P}\left(D_1 \leq X \right) \geq \frac{b}{b+h} \right\}\\
 &=  \sqrt{n} \inf \left\{ X \geq 0: \mathbb{P}\left(D_1 \leq X \right) \geq \frac{b}{b+h} \right\} + \mu (n-\sqrt{n})\\
@@ -68,7 +87,7 @@ Q_P^* &=  \inf \left\{ Q \geq 0: \mathbb{P}\left( \sum_{i=1}^N D_i \leq Q \right
 With this we can now determine optimal expected cost in the pooled inventory system $G_P(Q_P^*)$:
 
 \begin{align*}
-G_P(Q_P^*) &=  \mathbb{E}_{\{D\}}\left[h(Q_P^* - \sum_{i=1}^N D_i)_+ + b(\sum_{i=1}^N D_i - Q_P^*)_+\right]\\
+G_P(Q_P^*) &=  \mathbb{E}_{\{D\}}\left[h(Q_P^* - \sum_{i=1}^n D_i)_+ + b(\sum_{i=1}^n D_i - Q_P^*)_+\right]\\
 &=  \mathbb{E}_{\{D\}}\big[h((\sqrt{n} Q^* + \mu (n-\sqrt{n})) - (\sqrt{n}D_1 + \mu (n-\sqrt{n})))_+ \\
 &+ b((\sqrt{n}D_1 + \mu (n-\sqrt{n})) - (\sqrt{n} Q^* + \mu (n-\sqrt{n})))_+\big]\\
 &=  \mathbb{E}_{\{D\}}\big[h(\sqrt{n} Q^* - \sqrt{n}D_1)_+ + b(\sqrt{n}D_1 - \sqrt{n} Q^* )_+\big]\\
@@ -78,7 +97,7 @@ G_P(Q_P^*) &=  \mathbb{E}_{\{D\}}\left[h(Q_P^* - \sum_{i=1}^N D_i)_+ + b(\sum_{i
 
 It follows that
 $$
-\frac{G_D(Q^*)}{G_P(Q_P^*)} = \frac{n G(Q^*)}{\sqrt{n} G(Q^*)} = \frac{n}{\sqrt{n}} = \sqrt{n} 
+\frac{G_D(Q^*)}{G_P(Q_P^*)} = \frac{n G(Q^*)}{\sqrt{n} G(Q^*)} = \frac{n}{\sqrt{n}} = \sqrt{n}
 $$
 This result means that the expected optimal cost of the decentralized system is $\sqrt{n}$-times as large as the expected optimal cost of the pooled inventory system under the given assumptions.
 
@@ -89,24 +108,24 @@ This result means that the expected optimal cost of the decentralized system is 
 \section{An Investment Problem}
 We want to find the optimal investment strategy in a situation where the investor can make $N$ sequential investment decisions, each resulting in one of two possible outcomes: Either (1) the invested money doubles (with probability $1/2 < p < 1$, or (2) the invested money is lost (with probability $1-p$). \\
 
-Let $x_k$ denote the wealth at time $k$ (initial wealth $x_0$), let $u_k \in U_k(x_k) = [0, x_k]$ be the investment (decision) at time $k$ and let 
+Let $x_k$ denote the wealth at time $k$ (initial wealth $x_0$), let $u_k \in U_k(x_k) = [0, x_k]$ be the investment (decision) at time $k$ and let
 $$
-w_k(u_k) = 
-\begin{cases} 
+w_k(u_k) =
+\begin{cases}
 2 u_k & \text{ with probability } p\\
 0 & \text{ with probability } (1-p)\\
 \end{cases}
 $$
-be the outcome of the investment at time $k$. 
+be the outcome of the investment at time $k$.
 
 First, note that the state transition has the following form:
 $$
-x_{k+1} = f(x_k,u_k,w_k) = x_k - u_k + w_k = 
-\begin{cases} 
+x_{k+1} = f(x_k,u_k,w_k) = x_k - u_k + w_k =
+\begin{cases}
 x_k + u_k & \text{ with probability } p\\
 x_k - u_k & \text{ with probability } (1-p)\\
 \end{cases}
-$$ 
+$$
 
 The DP algorithm has the form (note that we can consider the logarithm of the investor's wealth after the $N^{th}$ investment as the objective function without changing the optimal strategy):
 
@@ -183,12 +202,12 @@ $$J_{N}(x_{N}) = \begin{cases}
 			   \end{cases}
 $$
 \begin{align*}
-J_{k}(x_{k}) &= 
+J_{k}(x_{k}) &=
 \begin{cases}
 				\underset{u_{k} \in U_{k}(x_{k})}{max} \underset{w_{k}}{\mathbb{E}} \big\{g_{k}(x_{k},u_{k},w_{k}) + J_{k+1}(x_{k+1})\big\} \, \, & if \, \, x_{N} \neq T\\
 				0 \, \,  & if \, \, x_{N} = T
 			   \end{cases}\\
-			   &= 
+			   &=
 \begin{cases}
 				max \underset{w_{k}}{\mathbb{E}} \big\{g_{k}(x_{k},u_{k}^{1},w_{k}) + J_{k+1}(x_{k+1}), \, g_{k}(x_{k},u_{k}^{2},w_{k}) + J_{k+1}(x_{k+1})\big\} \, \, & if \, \, x_{N} \neq T\\
 				0 \, \,  & if \, \, x_{N} = T
@@ -224,8 +243,7 @@ $$
 % Problem 5 %
 %%%%%%%%
 \section{Scheduling Problem}
-(a) \\
-We solve this problem using list indexing. Let $L$ be the optimal order of answering the questions. Let $i$ and $j$ be the $k^{th}$ and $(k + 1)^{st}$ questions in the optimally ordered list L.
+(a) We solve this problem using list indexing. Let $L$ be the optimal order of answering the questions. Let $i$ and $j$ be the $k^{th}$ and $(k + 1)^{st}$ questions in the optimally ordered list L.
 $$
 L = (i_{0},...,i_{k-1},i,j,i_{k+2},...,i_{N-1})
 $$
@@ -240,14 +258,27 @@ $$
 L^{\prime} = (i_{0},...,i_{k-1},j,i,i_{k+2},...,i_{N-1})
 $$
 Since $L$ is optimal, $\mathbb{E}[{reward~of~L}] \geq \mathbb{E}[{reward~of~L^{\prime}}]$
-This is equivalent to 
+This is equivalent to
 \begin{align*}
 p_{i}(R_{i}+p_{j}R_{j} -(1-p_{j})F_{j})-(1-p_{i})F_{i} &\geq p_{j}(R_{j}+p_{i}R_{i} -(1-p_{i})F_{i})-(1-p_{j})F_{j} \\
 \implies \frac{p_{i}R_{i}-(1-p_{i})F_{i}}{1-p_{i}} &\geq \frac{p_{j}R_{j}-(1-p_{j})F_{j}}{1-p_{j}}
 \end{align*}
+<<<<<<< HEAD
 So questions should be answered in order of decreasing $\frac{p_{i}R_{i}-(1-p_{i})F_{i}}{1-p_{i}}$ \\
 (b) \\
 With a no cost option of stopping, the questions would be answered in the same order as there would be no change to the argument above. We must now consider when the player should stop answering questions. Before each question they have two options stop answering questions or answer the next question. The player should chose the option with the higher expected reward. Clearly the expected reward for stopping is 0. The optimal stopping space would be $T_{k}=\{x|0 \leq  p_{k}R_{k}-(1-p_{k})F_{k} + J_{k+1}(x_{k}+p_{k}R_{k} ) \}$, with $J_{n}(x_{n})=0$ and $J_{k}(x_{k}) = max[0, p_{k}R_{k}-(1-p_{k})F_{k} + J_{k+1}(x_{k}+p_{k}R_{k} ) \}$
+=======
+So questions should be answered in order of decreasing $$\frac{p_{i}R_{i}-(1-p_{i})F_{i}}{1-p_{i}}$$ \\
+
+(b) With a no cost option of stopping, the questions would be answered in the same order as there would be no change to the argument above. We must now consider when the player should stop answering questions. Before each question they have two options stop answering questions or answer the next question. The player should chose the option with the higher expected reward. Clearly the expected reward for stopping is 0. The optimal stopping space would be
+$$T_{k}=\{x|0 \leq  \mathbb{E}[p_{k}R_{k}-(1-p_{k})F_{k} + J_{k+1}(x_{k}+p_{k}R_{k} ) \}$$
+with
+\begin{align*}
+J_{n}(x_{n}) &= 0\\
+J_{k}(x_{k}) &= max[0, \mathbb{E}[p_{k}R_{k}-(1-p_{k})F_{k} + J_{k+1}(x_{k}+p_{k}R_{k} ) \}\\
+\end{align*}
+
+>>>>>>> 180eaee47ddf888e545da72d3c1d03c06e90267c
 \end{document}
 
 
