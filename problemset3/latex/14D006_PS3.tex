@@ -64,6 +64,35 @@ Since the optimal decision of the manager depends on the accurate forecast of th
 
 \subsection{Part (b)}
 
+We use the given hint to state the dynamics of the problem.
+\[x_{k+1} =x_{k}+u_{k}-w{k}, \qquad \qquad y_{k+1} = \xi_k
+\]
+where $\xi_k$ takes values $L$ and $S$ for large and small demand with probabilities $q$ and $1-q$. Therefore, we can apply the DP algorithm with the terminal action $J_N(x_N, y_N) = 0$. The demand distribution of the next period will be known with probability $q$.
+Hence we have:
+\begin{multline*}
+J_k(x_k, y_k) = \min_{u_k \geq 0} \mathbb{E}_{w_k} [ cu_k + b \max(0, w_k - x_k - u_k) + h \max(0, x_k + u_k - w_k) \\
++ qJ_{k+1} (x_k + u_k - w_k , L) + (1 - q)J_{k+1} (x_k + u_k - w_k , S) | y_k ]
+\end{multline*}
+
+where the cost function $g_k(x_k, u_k, w_k) = cu_k + b \max(0, w_k - x_k - u_k) + h \max(0, x_k + u_k - w_k)$.
+As we saw in class, the functions $J_k(.,L)$ and $J_k(.,S)$ are convex functions and hence their convex combination will be a convex function. Thus we can find a $T_k^i$ which minimizes the convex function:
+\[
+c\alpha + \mathbb{E}_w [ b \max(0, w - \alpha) + h \max(0, \alpha - w)+ qJ_{k+1} (\alpha - w , L) + (1 - q)J_{k+1} (\alpha - w , S) | y_k ]
+\]
+where $y_k$ takes the values $L$ and $S$.
+
+
+Then the optimal policy is:
+\begin{align*}
+\mu^*(x_k,y_k) =
+\begin{cases}
+T_k^i - x_k, & \text{if } y_k = i, T_k^i > x_k \\
+0, & \text{otherwise }
+\end{cases}
+\end{align*}
+where $i \in \{L,S\}$
+
+
 %%%%%%%%
 % Problem 2 %
 %%%%%%%%
