@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.2.25)  10 MAR 2017 09:40
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.2.25)  10 MAR 2017 15:17
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -403,7 +403,7 @@ Here is how much of TeX's memory you used:
  7222 multiletter control sequences out of 15000+600000
  15804 words of font info for 59 fonts, out of 8000000 for 9000
  357 hyphenation exceptions out of 8191
- 38i,18n,40p,685b,209s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 38i,18n,40p,657b,209s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/
 amsfonts/cm/cmbx12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfon
 ts/cm/cmcsc10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm
@@ -419,7 +419,7 @@ blic/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/a
 msfonts/cm/cmsy6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts
 /cm/cmsy8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/boondox/zxxrl8a
 .pfb>
-Output written on 14D006_PS3.pdf (7 pages, 177604 bytes).
+Output written on 14D006_PS3.pdf (7 pages, 177598 bytes).
 PDF statistics:
  88 PDF objects out of 1000 (max. 8388607)
  63 compressed objects within 1 object stream
