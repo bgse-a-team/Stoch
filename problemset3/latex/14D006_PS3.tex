@@ -49,16 +49,16 @@
 % Problem 2 %
 %%%%%%%%
 \section{Inventory Pooling}
-We want to compare the optimal expected cost between a decentralized and a pooled inventory system with $n$ locations. Let the demand at each location $i$ be independently, normally distributed with mean $\mu$ and variance $\sigma^2$, i.e. $D_1,...D_N \stackrel{iid}{\sim} N(\mu, \sigma^2)$. Then $\sum_{i=1}^N D_i \stackrel{d}{=} \sqrt{n}D_1 + \mu (n-\sqrt{n})$. \\
+We want to compare the optimal expected cost between a decentralized and a pooled inventory system with $n$ locations. Let the demand at each location $i$ be independently, normally distributed with mean $\mu$ and variance $\sigma^2$, i.e. $D_1,...D_n \stackrel{iid}{\sim} N(\mu, \sigma^2)$. Then $\sum_{i=1}^n D_i \stackrel{d}{=} \sqrt{n}D_1 + \mu (n-\sqrt{n})$. \\
 
 
 Let $h$ and $b$ denote the inventory holding cost and backorder cost, respectively. We already know that if $G(Q^*) = \mathbb{E}_D[h(Q^*-D)_+ + b(D-Q^*)_+]$ denotes the optimal expected cost for each location (with optimal order quantity $Q^* = \inf \left\{ Q \geq 0: \mathbb{P}\left(D_1 \leq Q \right) \geq \frac{b}{b+h} \right\}$), then the optimal expected cost in the decentralized inventory system is
-$$G_D(Q^*) = \sum_{i=1}^N G(Q^*) = n G(Q^*)$$
+$$G_D(Q^*) = \sum_{i=1}^n G(Q^*) = n G(Q^*)$$
 
 To find the optimal expected cost in the pooled inventory system $G_P(Q_P^*)$, we first need to determine the optimal order quantity $Q_P^*$ under this system. 
 
 \begin{align*}
-Q_P^* &=  \inf \left\{ Q \geq 0: \mathbb{P}\left( \sum_{i=1}^N D_i \leq Q \right) \geq \frac{b}{b+h} \right\}\\
+Q_P^* &=  \inf \left\{ Q \geq 0: \mathbb{P}\left( \sum_{i=1}^n D_i \leq Q \right) \geq \frac{b}{b+h} \right\}\\
 &=  \inf \left\{ Q \geq 0: \mathbb{P}\left( \sqrt{n}D_1 + \mu (n-\sqrt{n}) \leq Q \right) \geq \frac{b}{b+h} \right\}\\
 &=  \inf \left\{ \sqrt{n}X + \mu (n-\sqrt{n}) \geq 0: \mathbb{P}\left(D_1 \leq X \right) \geq \frac{b}{b+h} \right\}\\
 &=  \sqrt{n} \inf \left\{ X \geq 0: \mathbb{P}\left(D_1 \leq X \right) \geq \frac{b}{b+h} \right\} + \mu (n-\sqrt{n})\\
@@ -68,7 +68,7 @@ Q_P^* &=  \inf \left\{ Q \geq 0: \mathbb{P}\left( \sum_{i=1}^N D_i \leq Q \right
 With this we can now determine optimal expected cost in the pooled inventory system $G_P(Q_P^*)$:
 
 \begin{align*}
-G_P(Q_P^*) &=  \mathbb{E}_{\{D\}}\left[h(Q_P^* - \sum_{i=1}^N D_i)_+ + b(\sum_{i=1}^N D_i - Q_P^*)_+\right]\\
+G_P(Q_P^*) &=  \mathbb{E}_{\{D\}}\left[h(Q_P^* - \sum_{i=1}^n D_i)_+ + b(\sum_{i=1}^n D_i - Q_P^*)_+\right]\\
 &=  \mathbb{E}_{\{D\}}\big[h((\sqrt{n} Q^* + \mu (n-\sqrt{n})) - (\sqrt{n}D_1 + \mu (n-\sqrt{n})))_+ \\
 &+ b((\sqrt{n}D_1 + \mu (n-\sqrt{n})) - (\sqrt{n} Q^* + \mu (n-\sqrt{n})))_+\big]\\
 &=  \mathbb{E}_{\{D\}}\big[h(\sqrt{n} Q^* - \sqrt{n}D_1)_+ + b(\sqrt{n}D_1 - \sqrt{n} Q^* )_+\big]\\
