@@ -272,7 +272,8 @@ $$
 % Problem 5 %
 %%%%%%%%
 \section{Scheduling Problem}
-(a) We solve this problem using list indexing. Let $L$ be the optimal order of answering the questions. Let $i$ and $j$ be the $k^{th}$ and $(k + 1)^{st}$ questions in the optimally ordered list L.
+\subsection{Part (a)}
+We solve this problem using list indexing. Let $L$ be the optimal order of answering the questions. Let $i$ and $j$ be the $k^{th}$ and $(k + 1)^{st}$ questions in the optimally ordered list L.
 $$
 L = (i_{0},...,i_{k-1},i,j,i_{k+2},...,i_{N-1})
 $$
@@ -292,22 +293,16 @@ This is equivalent to
 p_{i}(R_{i}+p_{j}R_{j} -(1-p_{j})F_{j})-(1-p_{i})F_{i} &\geq p_{j}(R_{j}+p_{i}R_{i} -(1-p_{i})F_{i})-(1-p_{j})F_{j} \\
 \implies \frac{p_{i}R_{i}-(1-p_{i})F_{i}}{1-p_{i}} &\geq \frac{p_{j}R_{j}-(1-p_{j})F_{j}}{1-p_{j}}
 \end{align*}
-<<<<<<< HEAD
-So questions should be answered in order of decreasing $\frac{p_{i}R_{i}-(1-p_{i})F_{i}}{1-p_{i}}$ \\
-(b) \\
-With a no cost option of stopping, the questions would be answered in the same order as there would be no change to the argument above. We must now consider when the player should stop answering questions. Before each question they have two options stop answering questions or answer the next question. The player should chose the option with the higher expected reward. Clearly the expected reward for stopping is 0. The optimal stopping space would be $T_{k}=\{x|0 \leq  p_{k}R_{k}-(1-p_{k})F_{k} + J_{k+1}(x_{k}+p_{k}R_{k} ) \}$, with $J_{n}(x_{n})=0$ and $J_{k}(x_{k}) = max[0, p_{k}R_{k}-(1-p_{k})F_{k} + J_{k+1}(x_{k}+p_{k}R_{k} ) \}$
-=======
-So questions should be answered in order of decreasing $$\frac{p_{i}R_{i}-(1-p_{i})F_{i}}{1-p_{i}}$$ \\
+So questions should be answered in order of decreasing $$\frac{p_{i}R_{i}-(1-p_{i})F_{i}}{1-p_{i}}$$ 
 
-(b) With a no cost option of stopping, the questions would be answered in the same order as there would be no change to the argument above. We must now consider when the player should stop answering questions. Before each question they have two options stop answering questions or answer the next question. The player should chose the option with the higher expected reward. Clearly the expected reward for stopping is 0. The optimal stopping space would be
-$$T_{k}=\{x|0 \leq  \mathbb{E}[p_{k}R_{k}-(1-p_{k})F_{k} + J_{k+1}(x_{k}+p_{k}R_{k} ) \}$$
-with
+\subsection{Part (b)}
+With a no cost option of stopping, the questions would be answered in the same order as there would be no change to the argument above. We must now consider when the player should stop answering questions. Before each question they have two options stop answering questions or answer the next question. The player should chose the option with the higher expected reward. Clearly the expected reward for stopping is 0. The optimal stopping space would be 
+$$T_{k}=\{x|0 \leq  p_{k}R_{k}-(1-p_{k})F_{k} + J_{k+1}(x_{k}+p_{k}R_{k} ) \}$$ with
 \begin{align*}
 J_{n}(x_{n}) &= 0\\
-J_{k}(x_{k}) &= max[0, \mathbb{E}[p_{k}R_{k}-(1-p_{k})F_{k} + J_{k+1}(x_{k}+p_{k}R_{k} ) \}\\
+J_{k}(x_{k}) &= max\{0, p_{k}R_{k}-(1-p_{k})F_{k} + J_{k+1}(x_{k}+p_{k}R_{k} ) \}\\
 \end{align*}
 
->>>>>>> 180eaee47ddf888e545da72d3c1d03c06e90267c
 \end{document}
 
 
