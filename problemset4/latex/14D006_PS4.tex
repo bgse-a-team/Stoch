@@ -43,7 +43,39 @@
 % Problem 1 %
 %%%%%%%%
 \section{Linear-Quadratic Problem with Forecasts}
+First of all let's set up the problem in order to make the proof. The dynamics of the problem is linear function of the form:
+$$x_{k+1} = A_{k}x_{k} + B_{k}u_{k} + w_{k}$$
+and the cost function is a quadratic function of the form:
+$$\underset{w_{k}}{\mathbb{E}}\bigg\{g_{N}(x_{N}) + \sum_{k=0}^{N-1}g_{k}(x_{k},u_{k},w_{k})\bigg\}$$
+where
+$$g_{N}(x_{N}) = x'_{N}Q_{N}x_{N}$$
+$$g_{k}(x_{k},u_{k},w_{k}) = x'_{k}Q_{k}x_{k} + u'_{k}R_{k}u_{k}$$
+The matrices $A_{k}$, $B_{k}$, $Q_{k}$ and $R_{k}$ are given and the last two are positive semidefinite symmetric and positive definite symmetric, respectively.\\
 
+The DP-algorithm that solves the minimization problem is:
+$$J_{N}(x_{N}) = x'_{N}Q_{N}x_{N}$$
+$$J_{k}(x_{k}) = \underset{u_{k}}{min} \underset{w_{k}|y_{k}}{\mathbb{E}} \bigg\{x'_{k}Q_{k}x_{k} + u'_{k}R_{k}u_{k} + J_{k+1}(A_{k}x_{k} + B_{k}u_{k} + w_{k})\bigg\}$$
+By induction we get that:
+\begin{align*}
+J_{N-1}(x_{N-1}) &= \underset{u_{N-1}}{min} \underset{w_{N-1}|y_{N-1}}{\mathbb{E}} \bigg\{x'_{N-1}Q_{N-1}x_{N-1} + u'_{N-1}R_{N-1}u_{N-1} + \\
+&+ \big(A_{N-1}x_{N-1} + B_{N-1}u_{N-1} + w_{N-1}\big)'Q_{N}\big(A_{N-1}x_{N-1} + B_{N-1}u_{N-1} + w_{N-1}\big) \bigg\}\\
+&= x'_{N-1}Q_{N-1}x_{N-1} + x'_{N-1}A'_{N-1}Q_{N}A_{N-1}x_{N-1} +\\
+&+ \underset{u_{N-1}}{min}\bigg\{ u'_{N-1}R_{N-1}u_{N-1} + u'_{N-1}B'_{N-1}Q_{N}B_{N-1}u_{N-1} + 2x'_{N-1}A'_{N-1}Q_{N}B_{N-1}u_{N-1}\bigg\} + \\
+&+ \underset{w_{N-1}|y_{N-1}}{\mathbb{E}}\bigg\{ w'_{N-1}Q_{N}w_{N-1} + 2x'_{N-1}A'_{N-1}Q_{N}w_{N-1}\bigg\} + \\
+&+ \underset{u_{N-1}}{min} \underset{w_{N-1}|y_{N-1}}{\mathbb{E}} \bigg\{2u'_{N-1}B'_{N-1}Q_{N}w_{N-1}\bigg\}
+\end{align*}
+
+By differentiating the previous expression and setting it to 0, we obtain the following result:
+$$\big(R_{N-1} + B'_{N-1}Q_{N}B_{N-1}\big)u_{N-1}^{*} = -B'_{N-1}Q_{N}A_{N-1}x_{N-1} - B'_{N-1}Q_{N}\mathbb{E}[w_{N-1}|y_{N-1}]$$
+
+Given the definitions provided previously we can note that the matrix $R_{N-1} + B'_{N-1}Q_{N}B_{N-1}$ is positive definite, which means that we can invert it and obtain the following optimal value:
+\begin{align*}
+u_{N-1}^{*} &= - \big(R_{N-1} + B'_{N-1}Q_{N}B_{N-1}\big)^{-1}\big(B'_{N-1}Q_{N}A_{N-1}x_{N-1} + B'_{N-1}Q_{N} \mathbb{E}[w_{N-1}|y_{N-1}]\big)\\
+&= - \big(R_{N-1} + B'_{N-1}Q_{N}B_{N-1}\big)^{-1}B'_{N-1}Q_{N}\big(A_{N-1}x_{N-1} +\mathbb{E}[w_{N-1}|y_{N-1}]\big)
+\end{align*}
+Note that the previous expression is already of the form of the expression to be proved. If we substitute back the optimal value $u_{N-1}^{*}$ in $J_{N-1}(x_{N-1})$ and continue doing this we get the general expression provided in the exercise, which is:
+$$\mu_{k}^{*}(x_{k},y_{k}) = - \big(R_{k} + B'_{N-1}K_{k+1}B_{k}\big)^{-1}B'_{k}K_{k+1}\big(A_{k}x_{k} + \mathbb{E}[w_{k}|y_{k}]\big) + \alpha_{k}$$
+where $K_{k+1}$ is a function of $A_{k}$, $B_{k}$, $Q_{k}$ and $R_{k}$.
 
 %%%%%%%%
 % Problem 2 %
