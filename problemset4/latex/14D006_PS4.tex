@@ -99,7 +99,36 @@ where $K_{k+1}$ is a function of $A_{k}$, $B_{k}$, $Q_{k}$ and $R_{k}$.
 % Problem 5 %
 %%%%%%%%
 \section{Robust Dynamic Programming}
+Consider a variation of the basic problem in which we do not have a probabilistic description of uncertainty. Instead, we want to find the closed-loop policy $\pi = \{\mu_0(.),..,\mu_{N-1}(.)\}$ with $\mu_k(x_k) \in U_k(x_k)$ that minimizes the maximum possible cost:
+$$
+J_{\pi}(x_0) = \max_{w_k \in W_k(x_k,\mu_k(x_k))} \left[ g_N(x_N) + \sum_{k=0}^{N-1} g_k(x_k,\mu_k(x_k), w_k)\right]
+$$
 
+\subsection{DP formulation}
+Using the principle of optimality, the DP like recursion for this variation of the basic problem looks like:
+\begin{align*}
+J_{N}(x_{N}) &= g_N(x_N)\\
+J_{k}(x_{k}) &= \min_{u_k \in U_k(x_k)} \max_{w_k \in W_k(x_k,\mu_k(x_k))} \left[ g_k(x_k,\mu_k(x_k),w_k) + J_{k+1}(f_k(x_k,\mu_k(x_k),w_k))\right]\\
+\end{align*}
+Note that, when we compare the DP formulation to the original basic problem, instead of minimizing the expected cost over $w_k$, here we minimize the maximum possible cost that can result from an action $u_k=\mu_k(x_k)$.
+
+\subsection{Reachability of a target tube}
+Now assume that at each stage $k$, the state $x_k$ must belong to a given set $X_k$. A cost structure that fits the reachability problem within the general formulation looks as follows:
+\begin{align*}
+J_{N}(x_{N}) &= 
+\begin{cases}
+0 & \text{ if } x_N \in X_N\\
+1 & \text{ if } x_N \not\in X_N
+\end{cases}\\
+J_{k}(x_{k}) &= \min_{u_k \in U_k(x_k)} \max_{w_k \in W_k(x_k,\mu_k(x_k))} \left[ J_{k+1}(f_k(x_k,\mu_k(x_k),w_k))\right]\\
+\end{align*}
+
+The set $\bar{X}_k$, i.e. the set that we must reach at stage $k$ in order to be able to maintain the state of the system in the desired tube henceforth, can be computed recursively as follows:
+\begin{align*}
+\bar{X}_N &= X_N\\
+\bar{X}_k &= \{x_k: \exists \mu_k(x_k) \in U_k(x_k).\forall w_k\in W_k(x_k,\mu_k(x_k)).f_k(x_k,\mu_k(x_k),w_k) \in \bar{X}_{k+1}\}\\
+\end{align*}
+For $x_k \in \bar{X}_k$, there must exist at least one action $u_k=\mu_k(x_k)$ in set $U_k(x_k)$ such that every possible outcome $w_k$ in the outcome set $W_k(x_k,\mu_k(x_k))$ takes us to a state $x_{k+1} = f_k(x_k,\mu_k(x_k),w_k) \in \bar{X}_{k+1}$.
 
 \end{document}
 
