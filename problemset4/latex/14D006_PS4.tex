@@ -80,8 +80,76 @@ where $K_{k+1}$ is a function of $A_{k}$, $B_{k}$, $Q_{k}$ and $R_{k}$.
 %%%%%%%%
 % Problem 2 %
 %%%%%%%%
+\newpage
 \section{Computational Assignment on Linear-Quadratic Control}
+We consider a horizon of $N=100$ time periods and a discrete time, homogeneous, linear system, i.e.,
+$$ x_{k+1} = A x_k + B u_k + w_k$$with $A = \begin{bmatrix} 1 & 2 \\[0.3em] 3 & 2 \end{bmatrix}$,
+       $B = \begin{bmatrix} 4 & 1 \\[0.3em] 2 & 3 \end{bmatrix}$,
+and $\{w_k\}$ being a sequence of IID, zero-mean, Gaussian random vectors with diagonal covariance matrix $D$. 
+The cost structure is defined as 
+\begin{align*}
+g_{N}(x_{N}) &= x_N^T C^T C x_N\\
+g_{k}(x_{k}) &= x_k^T C^T C x_k + u_k^T R u_k\\
+\end{align*}
+with $C = \begin{bmatrix} 1 & 3 \end{bmatrix}$ and diagonal, positive-definite input-cost matrix $R$.
 
+\subsection{Controllability and observability conditions}
+Note that the matrix $[B, AB] = \begin{bmatrix} 4 & 2 & 7 & 11 \\[0.3em] 1 & 3 & 10 & 10 \end{bmatrix}$ is full rank, thus ensuring controllability. Intuitively, \textit{controllability} means that one is able to move the internal state $x$ of a system from any initial state $x_0$ to any other final state $x_k$ in a finite time period through a control sequence $\{u_k\}$ (ignoring any disturbances). In particular, \textit{controllability} imposes the following structure on the system:
+$$
+x_k = B u_{k-1} + AB u_{k-2} + ... + A^{k-1}B u_{0} + A^k x_0
+$$\\
+
+
+Furthermore, the observability condition is ensured because matrix $[C^T, A^T C^T] = \begin{bmatrix} 1 & 7 \\[0.3em] 3 & 9 \end{bmatrix}$ is full rank. Intuitively, \textit{observability} means that it is possible to determine the behavior of the entire system through the system's output $\{x_k\}$. In particular, given measurements of the form $z_k = C x_k$, one can infer initial state $x_0$ through the relations
+$$
+\begin{bmatrix} z_{k-1} \\[0.3em] ... \\[0.3em] z_{1} \\[0.3em] z_{0}  \end{bmatrix} = 
+\begin{bmatrix} CA^{k-1} \\[0.3em] ... \\[0.3em] CA \\[0.3em] C  \end{bmatrix} x_0
+$$\\
+
+
+\subsection{Different covariance matrices}
+First, we compare the behavior of the system for two covariance matrices for the disturbances, $D_1 = \begin{bmatrix} 1 & 0 \\[0.3em] 0 & 1 \end{bmatrix}$ and $D_2 = \begin{bmatrix} 5 & 0 \\[0.3em] 0 & 6 \end{bmatrix}$, with $D_2$ "much larger" than $D_1$, under optimal control (given by the discrete-time Riccati equation). $R = \begin{bmatrix} 2 & 0 \\[0.3em] 0 & 4 \end{bmatrix}$ and $x_0 = \begin{bmatrix} 1 & 1 \end{bmatrix}^T$ are fixed. \\
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=105mm]{../plots/ii.jpg}
+\caption{State transitions for covariance matrices $D_1$ (blue) and $D_2$ (orange)}
+\end{figure}   
+
+We observe from \textit{Figure 1} that in both cases, the state keeps fluctuating around mean 0. However, as expected the fluctuations are larger for the "larger" covariance matrix $D_2$.
+
+\subsection{Different initial states}
+Next, we compare the behavior of the system for two initial conditions, $x_0^{(1)} = \begin{bmatrix} 1 & 1 \end{bmatrix}$ and $x_0^{(2)} = \begin{bmatrix} 5 & 4 \end{bmatrix}$, with $x_0^{(1)}$ "much larger" than $x_0^{(2)}$, under optimal control (given by the discrete-time Riccati equation). $R = \begin{bmatrix} 2 & 0 \\[0.3em] 0 & 4 \end{bmatrix}$ and $D = \begin{bmatrix} 1 & 0 \\[0.3em] 0 & 1 \end{bmatrix}$ are fixed. \\
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=105mm]{../plots/iii.jpg}
+\caption{State transitions for initial states $x_0^{(1)}$ (blue) and $x_0^{(2)}$ (orange)}
+\end{figure}   
+
+We observe from \textit{Figure 2} that both initial conditions converge to the same state transitions within a few (less than 10) periods.
+
+\subsection{Different input-cost matrices}
+Next, we compare the behavior of the system for two input-cost matrices conditions, $R_1 = \begin{bmatrix} 2 & 0 \\[0.3em] 0 & 4 \end{bmatrix}$ and $R_2 = \begin{bmatrix} 18 & 0 \\[0.3em] 0 & 22 \end{bmatrix}$, with $R_2$ "much larger" than $R_1$, under optimal control (given by the discrete-time Riccati equation). $D = \begin{bmatrix} 1 & 0 \\[0.3em] 0 & 1\end{bmatrix}$ and $x_0 = \begin{bmatrix} 1 & 1 \end{bmatrix}^T$ are fixed. \\
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=105mm]{../plots/iv.jpg}
+\caption{State transitions for input-cost matrices $R_1$ (blue) and $R_2$ (orange)}
+\end{figure}   
+
+We observe from \textit{Figure 3} that in both cases, the state keeps fluctuating around mean 0. However, both systems always move into the same direction (up or down), the magnitude of the movement is significantly larger with input-cost matrix $R_2$.
+
+\subsection{Optimal control vs. steady-state control}
+Finally, we compare the behavior of the system under optimal control (given by the discrete-time Riccati equation) vs. steady-state control (given by the algebraic Riccati equation). $D = \begin{bmatrix} 1 & 0 \\[0.3em] 0 & 1\end{bmatrix}$, $R = \begin{bmatrix} 2 & 0 \\[0.3em] 0 & 4 \end{bmatrix}$, and $x_0 = \begin{bmatrix} 1 & 1 \end{bmatrix}^T$ are fixed. \\
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=105mm]{../plots/v.jpg}
+\caption{State transitions under optimal control (blue) and steady-state control (orange)}
+\end{figure}   
+
+We observe from \textit{Figure 4} that under both controls the system has identical state transitions, except for the last few (less than 5) periods. This result shows that the discrete-time Riccati equations converge to the algebraic solution within few iterations.
 
 %%%%%%%%
 % Problem 3 %
