@@ -8,7 +8,6 @@
 								\usepackage[bb=boondox]{mathalfa}
 \usepackage{mathtools}
 \usepackage{amssymb}
-
 \usepackage{amsmath,amsfonts,amsthm} % Math packages
 \usepackage{bm}
 \usepackage{graphicx}
@@ -83,7 +82,8 @@ where $K_{k+1}$ is a function of $A_{k}$, $B_{k}$, $Q_{k}$ and $R_{k}$.
 \newpage
 \section{Computational Assignment on Linear-Quadratic Control}
 We consider a horizon of $N=100$ time periods and a discrete time, homogeneous, linear system, i.e.,
-$$ x_{k+1} = A x_k + B u_k + w_k$$with $A = \begin{bmatrix} 1 & 2 \\[0.3em] 3 & 2 \end{bmatrix}$,
+$$ x_{k+1} = A x_k + B u_k + w_k$$
+with $A = \begin{bmatrix} 1 & 2 \\[0.3em] 3 & 2 \end{bmatrix}$,
        $B = \begin{bmatrix} 4 & 1 \\[0.3em] 2 & 3 \end{bmatrix}$,
 and $\{w_k\}$ being a sequence of IID, zero-mean, Gaussian random vectors with diagonal covariance matrix $D$. 
 The cost structure is defined as 
@@ -155,6 +155,51 @@ We observe from \textit{Figure 4} that under both controls the system has identi
 % Problem 3 %
 %%%%%%%%
 \section{Asset Selling with Offer Estimation}
+This problem is a combination of the standard asset selling problem and the sequential hypothesis testing problem. Our terminal cost in this probelm is the same as in the standard asset selling case. In the final round, we must accept the offer given to us, regardless of the distribution it has come from or if we know which distribution this is. So,  
+ \begin{equation}
+    x_{N}=
+    \begin{cases}
+      x_{N}, & \text{if}\ x_{N}\neq T \\
+      0, & \text{otherwise}
+    \end{cases}
+  \end{equation}
+ 
+In the $k^{th}$ period, we have two options, to sell or to wait for the next offer, if we have not already sold the asset. So we must compare our expected return for waiting compared to the returns for selling. As in the standard problem if we sell we will have $(1+r)^{N-k}x_{k}$. However if we wait for the next offer our expected return will be $\mathbb{E}[J_{k+1}(w_{k})| w~distributed~ F_{i}]$. Our expected return for waiting for the next offer depends on our knowledge of the distribution of $w$. Our knowledge of the distribution of $w$ evolves over time with $q_{k}$. \\
+As in the sequential hypothesis testing 
+ \begin{equation}
+    u^{*}_{k}=
+    \begin{cases}
+      decide~true~ distribution ~is~ F_{1}, & \text{if}\ q_{k} \geq \alpha_{k} \\
+      decide ~true~ distribution~ is~ F_{2}, & \text{if}\ q_{k} \leq \beta_{k} \\
+      continue, & \text{otherwise}
+    \end{cases}
+  \end{equation}
+where
+
+$$\beta_{k}L_{2}=c+A_{k}(\beta_{k})$$
+$$(1-\alpha_{k})L_{1}=c+A_{k}(\alpha_{k})$$
+$$A_{k}(q_{k})=\mathbb{E}[J_{k+1}(\frac{q_{k}F_{1}(w_{k+1}}{q_{k}F_{1}(w_{k+1} + (1-q_{k})F_{2}(w_{k+1})})]$$
+c is the cost of getting a new observation, which here is how much lower the next offer is compared to the current offer, and L is the loss for incorrrectly guessing the distribution.
+Combining the two gives the optimal strategy, when we know the distribution, we sell or wait depending on our expected offers from that distribution. While we dont know the distribution we sell or wait depending on the expected return given the probabilities of us knowing the distribution.
+\begin{equation}
+    u^{*}_{k}=
+    \begin{cases}
+      sell, & \text{if}\ q_{k} \geq \alpha_{k} ~\text{and}~ x_{k} \geq \gamma_{k}\\
+      wait, & \text{if}\ q_{k} \geq \alpha_{k}~ \text{and} ~x_{k} \leq \gamma_{k}\\
+      sell, & \text{if}\ q_{k} \leq \beta_{k} ~\text{and}~ x_{k} \geq \delta_{k}\\
+      wait, & \text{if}\ q_{k} \leq \beta_{k}~ \text{and} ~x_{k} \leq \delta_{k}\\
+      sell, & \text{if}\ \beta \leq q_{k} \leq ~\alpha_{k}~ \text{and} x_{k} \geq \phi_{k}  \\
+      wait, & \text{if}\ \beta \leq q_{k} \leq \alpha_{k}~ \text{and} ~x_{k} \leq \phi_{k}
+    \end{cases}
+  \end{equation}
+where,
+$$
+\gamma_{k} = \frac{\mathbb{E}[J_{k+1}(w_{k})| w ~distributed~ F_{1}]}{(1+r)^{N-k}} $$
+$$
+\delta_{k} = \frac{\mathbb{E}[J_{k+1}(w_{k})| w~distributed~  F_{2}]}{(1+r)^{N-k}} $$
+$$
+\phi_{k} = \frac{\mathbb{E}[J_{k+1}(q_{k}\mathbb{E}_{F_{1}}[w_{k}]+(1-q_{k})\mathbb{E}_{F_{1}}[w_{k}]]}{(1+r)^{N-k}} \\
+$$
 
 
 %%%%%%%%
