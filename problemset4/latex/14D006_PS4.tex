@@ -231,6 +231,19 @@ Now assume that at each stage $k$, the state $x_k$ must belong to a given set $X
 J_{N}(x_{N}) &= 
 \begin{cases}
 0 & \text{ if } x_N \in X_N\\
+\infty & \text{ if } x_N \not\in X_N
+\end{cases}\\
+J_{k}(x_{k}) &= \min_{u_k \in U_k(x_k)} \max_{w_k \in W_k(x_k,\mu_k(x_k))} 
+\begin{cases}
+J_{k+1}(f_k(x_k,\mu_k(x_k),w_k))] & \text{ if } x_k \in X_k\\
+\infty & \text{ if } x_k \not\in X_k
+\end{cases}\\
+\end{align*}
+Note that if we assume that $X_k = \bar{X}_k$, then we can simplify the formulation to:
+\begin{align*}
+J_{N}(x_{N}) &= 
+\begin{cases}
+0 & \text{ if } x_N \in X_N\\
 1 & \text{ if } x_N \not\in X_N
 \end{cases}\\
 J_{k}(x_{k}) &= \min_{u_k \in U_k(x_k)} \max_{w_k \in W_k(x_k,\mu_k(x_k))} \left[ J_{k+1}(f_k(x_k,\mu_k(x_k),w_k))\right]\\
