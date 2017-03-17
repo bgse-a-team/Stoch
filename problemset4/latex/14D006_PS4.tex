@@ -206,41 +206,40 @@ $$
 % Problem 4 %
 %%%%%%%%
 \section{Inventory Control with Demand Estimation}
-
 This is a modified version of the inventory control problem in Problemset 3. The demand follows an unknown distribution $F$. We believe that it follows one of the 2 available distributions with probability $q$. This allows to calculate the expected cost at each period. We update the probability for the next period based on the observed realization of the demand.\\
-
-Primitives:\\
-
+\\
+\textbf{Primitives}\\
 $x_k$: Inventory at the beginning of period $k$\\
 $u_k$: Order quantity at the beginning of period $k$\\
-$w_k$: Demand during period $k$. Given that $w_k$ are i.i.d. with probability distribution $F_1$ or $F_2$\\
+$w_k$: Demand during period $k$. Given that $w_k$ are i.i.d with distribution $F_1$ or $F_2$\\
 $q_k$: Probability that $w_k$ follows the distribution $F_1$\\
 $q_0=q$: a-priori probability that $w_0$ follows the distribution $F_1$\\
-
-Dynamics:\\
-
+\\
+\textbf{Dynamics}\\
 $x_{k+1} = x_k + u_k - w_k$\\
 $q_{k+1}=\frac{q_kf_1(w_k)}{q_kf_1(w_k)+(1-q_k)f_2(w_k)}$, where $f_i(w)$ is the pdf of the distribution $F_i$.\\
-
-Cost:\\
-
-$g_N(x_N)=0$ \qquad \qquad Since we know that there is no terminal cost.\\
-$g_k(x_k, u_k, w_k) = cu_k + h \max{\{0,w_k - x_k - u_k\}} + p \max{\{0, x_k + u_k - w_k\}}$
-
-DP algorithm:\\
-
+\\
+\textbf{Cost}\\
+$g_N(x_N)=0$ \qquad \qquad (since we know that there is no terminal cost)\\
+$g_k(x_k, u_k, w_k) = cu_k + h \max{\{0,w_k - x_k - u_k\}} + p \max{\{0, x_k + u_k - w_k\}}$\\
+\\
+\textbf{DP algorithm}\\
 $J_N(x_N)=0$\\
 $J_k(x_k)=\underset{u_k\geq 0}{\min}\mathbb{E}\left[cu_k+h\max\{0,w_k-x_k-u_k\}+p\max\{0,x_k+u_k-w_k\}+J_{k+1}(x_{k+1})\right]$\\
-
+\\
 We choose a new decision variable $y_k=x_k+u_k$, which gives: \\
-$J_k(y_k)=\underset{y_k\geq x_k}{\min}G_k(y_k)-cx_k$, where $$G_k(y_k)=cy+p\mathbb{E}[\max\{0,y_k-w_k\}]+h\mathbb{E}[\max\{0,w_k-y_k\}]+\mathbb{E}[J_{k+1}(y_k-w_k)]$$
-Now, since $w_k$ is drawn from $F_1$ with probability $q_k$ and from $F_2$ with probability $1-q_k$ we can assign the appropriate weights to the costs, leading to\\
+$$J_k(y_k)=\underset{y_k\geq x_k}{\min}G_k(y_k)-cx_k$$ 
+where 
+$$G_k(y_k)=cy+p\mathbb{E}[\max\{0,y_k-w_k\}]+h\mathbb{E}[\max\{0,w_k-y_k\}]+\mathbb{E}[J_{k+1}(y_k-w_k)]$$
+Now, since $w_k$ is drawn from $F_1$ with probability $q_k$ and from $F_2$ with probability $1-q_k$ we can assign the appropriate weights to the costs, leading to
+
 \begin{align*}
 G_k(y_k)=cy_k+q_k(h\mathbb{E}_{w_k \sim F_1}[\max\{0,w_k-y_k\}]+p\mathbb{E}_{w_k \sim F_1}[\max\{0,y_k-w_k\}]+\mathbb{E}_{w_k \sim F_1}[J_{k+1}(y_k-w_k)])+\\
 +(1-q_k)(h\mathbb{E}_{w_k \sim F_2}[\max\{0,w_k-y_k\}]+p\mathbb{E}_{w_k \sim F_2}[\max\{0,y_k-w_k\}]+\mathbb{E}_{w_k \sim F_2}[J_{k+1}(y_k-w_k)])
-\end{align*}\\
+\end{align*}
 
 Following classroom discussion, we can say that $G(.)$ is convex, and thus, the weighted sum with probabilities $G_k(y_k)$ will also be convex. Hence, there exists a $S_k$ which minimizes $G_k(y)$ such that $S_k \in \arg \min_{y \in \mathbb{R}} G_k(y)$. This $S_k$ in period $k$ although could be optimum but unreachable if it is smaller than $x_k$. Then, the policy is given by:
+
 \begin{align*}
 \mu_k^{\star}(x_k)=
 \begin{cases}
@@ -248,7 +247,6 @@ S_k-x_k & \text{if }S_k>x_k\\
 0 & \text{otherwise }\\
 \end{cases}
 \end{align*}
-
 This is the required optimal threshold policy.
 
 %%%%%%%%
