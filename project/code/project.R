@@ -69,6 +69,11 @@ simulate.drive <- function(mu) {
                 x <- i[[t]]$x
             } else if (outcome < 0.55) { # sacked
                 x <- i[[t]]$x + rpois(1,6)
+                if (x > 100) { # safety
+                    terminated <- TRUE
+                    x <- 20
+                    r <- -2.0 
+                }
             } else { # pass complete
                 x <- i[[t]]$x - rpois(1,12) + 2
                 if (x > 100) { # safety
@@ -108,7 +113,7 @@ simulate.drive <- function(mu) {
         # KICK attempt
         if (u == 'K') {
             terminated <- TRUE
-            if (outcome < max(0, 0.95 - 0.95*i[[t]]$x/60)) { # success
+            if (outcome < max(0, 0.95 - 0.95*i[[t]]$x/60)) { # successful field goal
                 x <- 20
                 r <- 3
             } else { # missed field goal
@@ -116,7 +121,7 @@ simulate.drive <- function(mu) {
             }
         }  
         
-        if (x < 0) { # touchdown
+        if (x <= 0) { # touchdown
             terminated <- TRUE
             x <- 20 
             r <- 6.8
@@ -164,10 +169,22 @@ heuristic.policy <- function() {
 # Compute expected reward of given policy
 # ----------------------------------------------------------------------
 expected.reward <- function(mu) {
-    Ne <- 100
+    Ne <- 10000
     r <- rep(0,Ne)
     for (i in 1:Ne) {
         r[i] <- simulate.drive(mu)$r
     }
     return(mean(r))
+}
+
+# ----------------------------------------------------------------------
+# Generate samples for a given policy
+# ----------------------------------------------------------------------
+generate.sample <- function(mu) {
+    Ns <- 10000
+    D <- list()
+    for (i in 1:Ns) {
+        D[[i]] <- simulate.drive(mu)
+    }
+    return(D)
 }
