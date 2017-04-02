@@ -44,11 +44,15 @@ initial.condition <- function() {
 # ----------------------------------------------------------------------
 # Simulate drive with given policy
 # ----------------------------------------------------------------------
-simulate.drive <- function(mu) {
+simulate.drive <- function(mu, i.start=NA) {
     t <- 1
     i <- list()
     r <- 0
-    i[[t]] <- initial.condition()
+    
+    # initial state
+    i[[t]] <- i.start
+    if (is.na(i.start))
+        i[[t]] <- initial.condition()
     
     terminated <- FALSE
     while(!terminated) {
@@ -149,26 +153,10 @@ simulate.drive <- function(mu) {
     return(list(i=i, r=r))
 }
 
-
 # ----------------------------------------------------------------------
-# Heuristic policy
+# Compute expected reward of given policy and initial state
 # ----------------------------------------------------------------------
-heuristic.policy <- function() {
-    mu <- list()
-    mu[[1]] <- matrix('P',100,100)
-    mu[[2]] <- matrix('P',100,100)
-    mu[[2]][,1:3] <- 'R' 
-   
-    mu[[3]] <- matrix('R',100,100)
-    mu[[4]] <- matrix('R',100,100)
-    
-    return(mu)
-}
-
-# ----------------------------------------------------------------------
-# Compute expected reward of given policy
-# ----------------------------------------------------------------------
-expected.reward <- function(mu) {
+expected.reward <- function(mu, i.start) {
     Ne <- 10000
     r <- rep(0,Ne)
     for (i in 1:Ne) {
@@ -176,6 +164,9 @@ expected.reward <- function(mu) {
     }
     return(mean(r))
 }
+
+i.start <- list(d=1, x=80, y=10)
+expected.reward(mu, i.start)
 
 # ----------------------------------------------------------------------
 # Generate samples for a given policy
@@ -187,4 +178,97 @@ generate.sample <- function(mu) {
         D[[i]] <- simulate.drive(mu)
     }
     return(D)
+}
+
+# ----------------------------------------------------------------------
+# (1) Best heuristic policy
+# ----------------------------------------------------------------------
+dummy.heuristic.policy <- function() {
+    mu <- list()
+    mu[[1]] <- matrix('P',100,100)
+    mu[[2]] <- matrix('P',100,100)
+    mu[[2]][,1:3] <- 'R' 
+    
+    mu[[3]] <- matrix('R',100,100)
+    mu[[4]] <- matrix('R',100,100)
+    
+    return(mu)
+}
+
+get.heuristic.policy <- function(options) {
+    mu <- list()
+    mu[[1]] <- matrix('P',100,100)
+    mu[[2]] <- matrix('P',100,100)
+    mu[[2]][,1:2] <- 'R' 
+    
+    mu[[3]] <- matrix('P',100,100)
+    for (x in 1:100) {
+        for (y in 1:x) {
+            if (x < 41) {
+                if (y < 3) mu[[3]][x,y] <- options$o3a1
+                else       mu[[3]][x,y] <- options$o3a2
+            } else {
+                if (y < 3) mu[[3]][x,y] <- options$o3b1
+                else       mu[[3]][x,y] <- options$o3a2
+            }
+        }
+    }
+    
+    mu[[4]] <- matrix('P',100,100)
+    for (x in 1:100) {
+        for (y in 1:x) {
+            if (x < 41) {
+                if (y < 3) mu[[2]][x,y] <- options$o4a1
+                else       mu[[2]][x,y] <- options$o4a2
+            } else {
+                if (y < 3) mu[[2]][x,y] <- options$o4b1
+                else       mu[[2]][x,y] <- options$o4b2
+            }
+        }
+    }    
+    
+    return(mu)    
+}
+
+best.heuristic.policy <- function() {
+    down3.options <- c('R','P')
+    down4.a.options <- c('R','P','K')
+    down4.b.options <- c('R','P','U')
+    
+    i.start <- list(d=1, x=80, y=10)
+    J.best <- -10 
+    
+    for (o3a1 in 1:length(down3.options)) {
+        for (o3a2 in 1:length(down3.options)) {
+            for (o3b1 in 1:length(down3.options)) {
+                for (o3b2 in 1:length(down3.options)) {
+                    for (o4a1 in 1:length(down4.a.options)) {
+                        for (o4a2 in 1:length(down4.a.options)) {
+                            for (o4b1 in 1:length(down4.b.options)) {
+                                for (o4b2 in 1:length(down4.b.options)) {
+                                    options <- list(o3a1=down3.options[o3a1],
+                                                    o3a2=down3.options[o3a2],
+                                                    o3b1=down3.options[o3b1],
+                                                    o3b2=down3.options[o3b2],
+                                                    o4a1=down4.a.options[o4a1],
+                                                    o4a2=down4.a.options[o4a2],
+                                                    o4b1=down4.b.options[o4a1],
+                                                    o4b2=down4.b.options[o4b2])
+                                    mu <- get.heuristic.policy(options)
+                                    
+                                    print(options)
+                                    J <- expected.reward(mu, i.start)
+                                    if (J > J.best) {
+                                        J.best <- J
+                                        options.best <- options
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return(options.best)    
 }
