@@ -8,6 +8,11 @@
 #           Hans-Peter Höllwirth, Akhil Lohia
 # (Date)    03.2017
 
+# house cleaning
+rm(list = ls())
+
+# load libraries
+
 # ----------------------------------------------------------------------
 # Initialize starting position
 # ----------------------------------------------------------------------
@@ -256,8 +261,9 @@ best.heuristic.policy <- function() {
                                                     o4b2=down4.b.options[o4b2])
                                     mu <- get.heuristic.policy(options)
                                     
-                                    print(options)
+                                    
                                     J <- expected.reward(mu, i.start)
+                                    print(J)
                                     if (J > J.best) {
                                         J.best <- J
                                         options.best <- options
@@ -270,5 +276,14 @@ best.heuristic.policy <- function() {
             }
         }
     }
-    return(options.best)    
+    return(list(options=options.best, J=J.best))    
 }
+
+best.heuristic <- best.heuristic.policy()
+
+# result from best.heuristic.policy function
+options.best <- list(o3a1='P', o3a2='P',
+                     o3b1='R', o3b2='R',
+                     o4a1='R', o4a2='P',
+                     o4b1='R', o4b2='U')
+expected.reward(get.heuristic.policy(options.best), i.start)
