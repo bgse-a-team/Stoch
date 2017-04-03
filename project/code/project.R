@@ -12,6 +12,7 @@
 rm(list = ls())
 
 # load libraries
+library(neuralnet)
 
 # ----------------------------------------------------------------------
 # Initialize starting position
@@ -161,8 +162,7 @@ simulate.drive <- function(mu, i.start=NA) {
 # ----------------------------------------------------------------------
 # Compute expected reward of given policy and initial state
 # ----------------------------------------------------------------------
-expected.reward <- function(mu, i.start) {
-    Ne <- 10000
+expected.reward <- function(mu, i.start, Ne=10000) {
     r <- rep(0,Ne)
     for (i in 1:Ne) {
         r[i] <- simulate.drive(mu)$r
@@ -176,8 +176,7 @@ expected.reward(mu, i.start)
 # ----------------------------------------------------------------------
 # Generate samples for a given policy
 # ----------------------------------------------------------------------
-generate.sample <- function(mu) {
-    Ns <- 10000
+generate.sample <- function(mu, Ns=10000) {
     D <- list()
     for (i in 1:Ns) {
         D[[i]] <- simulate.drive(mu)
@@ -287,3 +286,75 @@ options.best <- list(o3a1='P', o3a2='P',
                      o4a1='R', o4a2='P',
                      o4b1='R', o4b2='U')
 expected.reward(get.heuristic.policy(options.best), i.start)
+
+
+# ----------------------------------------------------------------------
+# (2) Neural network
+# ----------------------------------------------------------------------
+feature.vector <- function(i) {
+    return(c(0.01*i$x, 0.01*i$y))
+}
+
+# translate sample data into data frame for neural network training
+df.sample <- function(D) {
+    df <- data.frame()
+    row <- 1
+    for (d in 1:length(D)) {
+        for (i in 1:length(D[[d]]$i)) {
+            df[row, 1] <- feature.vector(D[[d]]$i[[i]])[1] 
+            df[row, 2] <- feature.vector(D[[d]]$i[[i]])[2]
+            df[row, 3] <- D[[d]]$r
+            row <- row + 1
+        }
+    } 
+    colnames(df) <- c('x', 'y', 'J')
+    return(df)
+}
+
+train.nn <- function(D, Nt=100, R=20) {
+    
+    df <- df.sample(D)
+    start.weights <- runif((R*2) + 2*R + 1)
+    start.weights <- rep(0.1, (R*2) + 2*R + 1)
+    r <- neuralnet(formula = J ~ x + y, data=df, hidden=R, rep=1, startweights=start.weights)
+    return(r$weights)
+}
+
+
+# ----------------------------------------------------------------------
+# (3) API and OPI
+# ----------------------------------------------------------------------
+API <- list(Np=1, Ne=8000, Ns=8000, Nt=8000)
+OPI <- list(Np=200, Ne=1, Ns=1, Nt=1)
+config <- list(Np=20, Ne=10, Ns=10, Nt=10) # for test purposes
+
+approx.policy.iteration <- function(config) {
+    i.start <- list(d=1, x=80, y=10)
+    J <- c()
+    
+    # 1. initial policy
+    mu <- list()
+    mu[[1]] <- dummy.heuristic.policy()
+    
+    for (k in 1:100) {
+        # (2.a) obtain estimate for expected reward 
+        if (k %% config$Np == 0)
+            J <- c(J, expected.reward(mu[[k]], i.start, config$Ne))
+        
+        # (2.b) generate sample trajectories
+        D <- generate.sample(mu[[k]], config$Ns)
+        
+        # (2.c) train parameter vector
+        
+        
+        # (2.d) set new policy
+        mu[[k+1]] <- mu[[k]]
+    }
+    
+    return(J)
+}
+
+J <- approx.policy.iteration(OPI)
+
+
+
