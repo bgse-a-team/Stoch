@@ -298,12 +298,12 @@ feature.vector <- function(i) {
 df.sample <- function(D, down) {
     df <- data.frame()
     row <- 1
-    for (d in 1:length(D)) {
-        for (i in 1:length(D[[d]]$i)) {
-            if (D[[d]]$i[[i]]$d == down) {
-                df[row, 1] <- feature.vector(D[[d]]$i[[i]])[1] 
-                df[row, 2] <- feature.vector(D[[d]]$i[[i]])[2]
-                df[row, 3] <- D[[d]]$r
+    for (l in 1:length(D)) { # l-th sample trajectory
+        for (t in 1:length(D[[l]]$i)) { # t-th state
+            if (D[[d]]$i[[t]]$d == down) {
+                df[row, 1] <- feature.vector(D[[l]]$i[[t]])[1] 
+                df[row, 2] <- feature.vector(D[[l]]$i[[t]])[2]
+                df[row, 3] <- D[[l]]$r
                 row <- row + 1
             }
         }
@@ -312,6 +312,7 @@ df.sample <- function(D, down) {
     return(df)
 }
 
+# train neural network for particular down
 train.nn <- function(D, down, Nt, R) {
     
     df <- df.sample(D, down)
@@ -321,6 +322,7 @@ train.nn <- function(D, down, Nt, R) {
     return(r)
 }
 
+# train 4 neural networks, one for each down
 train.nns <- function(D, Nt=100, R=20) {
     r <- list()
     for (d in 1:4) {
@@ -329,16 +331,10 @@ train.nns <- function(D, Nt=100, R=20) {
     return(r)
 }
 
-df.pred.covariates <- function() {
-    xs <- seq(1,100)
-    ys <- seq(1,100)
-    df <- expand.grid(xs,ys)
-    return(df)
-}
-
+# estimate reward-to-go from trained neural network
 estimate.Js <- function(r) {
     J <- list()
-    df <- df.pred.covariates()
+    df <- expand.grid(seq(1,100), seq(1,100))
     for (d in 1:4) {
         J[[d]] <- cbind(df, compute(r[[d]], covariate=df)$net.result)
     }
@@ -349,7 +345,7 @@ estimate.Js <- function(r) {
 # ----------------------------------------------------------------------
 # (3) Dynamic programming algorithm
 # ----------------------------------------------------------------------
-transition.prob <- function() {
+transition.prob.dummy <- function() {
     p <- list()
     for (u in 1:4) {
         p[[u]] <- matrix(1/(10000*10000), 10000, 10000)
@@ -357,20 +353,71 @@ transition.prob <- function() {
     return(p)
 }
 
-update.policy <- function(mu, r) {
+transition.prob <- function(D, mu) {
+    # initialize transition probabilities
+    p <- list()
+    for (u in 1:4) {
+        p[[u]] <- matrix(0, 10000, 10000)
+    }
+    
+    # compute empirical transition probablities
+    U <- c('P','R','U','K')
+    transitions <- rep(0,4)
+    for (l in 1:length(D)) { # l-th sample trajectory
+        if (length(D[[l]]$i) > 1) {
+            for (t in 2:length(D[[l]]$i)) { # t-th state
+                t.i <- D[[l]]$i[[t-1]]
+                t.j <- D[[l]]$i[[t]]
+                
+                u <- mu[[t.i$d]][t.i$x, t.j$y] # policy action
+                u.idx <- which(U==u)
+                transitions[u.idx] <- transitions[u.idx] + 1 
+                
+                p.i <- t.i$x + (t.i$x - 1) * t.i$y
+                p.j <- t.j$x + (t.j$x - 1) * t.j$y
+                p[[u.idx]][p.i,p.j] <- p[[u.idx]][p.i,p.j] + 1
+            }
+        }
+    } 
+    
+    # normalize transition probabilities
+    for (u in 1:4) {
+        if (transitions[u] > 0)
+            p[[u]] <- p[[u]] / transitions[u]
+    }
+    
+    return(p)
+}
+
+# compute down for particular transition
+# transition.down <- function(i, jx, jy) {
+#    if (jy == min(i$x,10) & jx < i$x) {
+#    }
+#}
+
+update.policy <- function(mu, r, D) {
     U <- c('P','R','U','K')
     J.approx <- estimate.Js(r)
-    p <- transition.prob()
+    p <- transition.prob(D, mu)
     
-    for(d in 1:4) {
-        for (x in 1:100) {
-            for (y in 1:100) {
+    for(id in 1:4) {
+        for (ix in 1:100) {
+            for (iy in 1:100) {
                 s <- rep(0,4)
                 for (u in 1:length(U)) {
-                    s[u] <- sum(p[[u]][x,y] * J.approx[[d]][J.approx[[d]][,1]==x & J.approx[[d]][,2]==y,3]) 
+                    
+                    for(jd in 1:4) {
+                        for (jx in 1:100) {
+                            for (jy in 1:100) {
+                                #cat('.')
+                                s[u] <- s[u] + p[[u]][ix+(ix-1)*iy, jx+(jx-1)*jy] *
+                                               J.approx[[jd]][J.approx[[jd]][,1]==jx & J.approx[[jd]][,2]==jy,3]
+                            }
+                        }
+                    }
                 }
-                #print(s)
-                mu[[d]][x,y] <- U[which.max(s)]
+                print(s)
+                mu[[id]][ix,iy] <- U[which.max(s)]
             }
         }
     }
@@ -404,7 +451,7 @@ approx.policy.iteration <- function(config) {
         r <- train.nns(D, config$Nt) 
         
         # (2.d) set new policy
-        mu[[k+1]] <- update.policy(mu[[k]], r)
+        mu[[k+1]] <- update.policy(mu[[k]], r, D)
     }
     
     return(J)
