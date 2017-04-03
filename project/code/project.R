@@ -260,7 +260,6 @@ best.heuristic.policy <- function() {
                                                     o4b2=down4.b.options[o4b2])
                                     mu <- get.heuristic.policy(options)
                                     
-                                    
                                     J <- expected.reward(mu, i.start)
                                     print(J)
                                     if (J > J.best) {
@@ -296,33 +295,90 @@ feature.vector <- function(i) {
 }
 
 # translate sample data into data frame for neural network training
-df.sample <- function(D) {
+df.sample <- function(D, down) {
     df <- data.frame()
     row <- 1
     for (d in 1:length(D)) {
         for (i in 1:length(D[[d]]$i)) {
-            df[row, 1] <- feature.vector(D[[d]]$i[[i]])[1] 
-            df[row, 2] <- feature.vector(D[[d]]$i[[i]])[2]
-            df[row, 3] <- D[[d]]$r
-            row <- row + 1
+            if (D[[d]]$i[[i]]$d == down) {
+                df[row, 1] <- feature.vector(D[[d]]$i[[i]])[1] 
+                df[row, 2] <- feature.vector(D[[d]]$i[[i]])[2]
+                df[row, 3] <- D[[d]]$r
+                row <- row + 1
+            }
         }
     } 
     colnames(df) <- c('x', 'y', 'J')
     return(df)
 }
 
-train.nn <- function(D, Nt=100, R=20) {
+train.nn <- function(D, down, Nt, R) {
     
-    df <- df.sample(D)
+    df <- df.sample(D, down)
     start.weights <- runif((R*2) + 2*R + 1)
     start.weights <- rep(0.1, (R*2) + 2*R + 1)
     r <- neuralnet(formula = J ~ x + y, data=df, hidden=R, rep=1, startweights=start.weights)
-    return(r$weights)
+    return(r)
+}
+
+train.nns <- function(D, Nt=100, R=20) {
+    r <- list()
+    for (d in 1:4) {
+        r[[d]] <- train.nn(D, d, Nt, R)
+    }
+    return(r)
+}
+
+df.pred.covariates <- function() {
+    xs <- seq(1,100)
+    ys <- seq(1,100)
+    df <- expand.grid(xs,ys)
+    return(df)
+}
+
+estimate.Js <- function(r) {
+    J <- list()
+    df <- df.pred.covariates()
+    for (d in 1:4) {
+        J[[d]] <- cbind(df, compute(r[[d]], covariate=df)$net.result)
+    }
+    return(J)
 }
 
 
 # ----------------------------------------------------------------------
-# (3) API and OPI
+# (3) Dynamic programming algorithm
+# ----------------------------------------------------------------------
+transition.prob <- function() {
+    p <- list()
+    for (u in 1:4) {
+        p[[u]] <- matrix(1/(10000*10000), 10000, 10000)
+    }
+    return(p)
+}
+
+update.policy <- function(mu, r) {
+    U <- c('P','R','U','K')
+    J.approx <- estimate.Js(r)
+    p <- transition.prob()
+    
+    for(d in 1:4) {
+        for (x in 1:100) {
+            for (y in 1:100) {
+                s <- rep(0,4)
+                for (u in 1:length(U)) {
+                    s[u] <- sum(p[[u]][x,y] * J.approx[[d]][J.approx[[d]][,1]==x & J.approx[[d]][,2]==y,3]) 
+                }
+                #print(s)
+                mu[[d]][x,y] <- U[which.max(s)]
+            }
+        }
+    }
+    return(mu)
+}
+
+# ----------------------------------------------------------------------
+# (4) API and OPI
 # ----------------------------------------------------------------------
 API <- list(Np=1, Ne=8000, Ns=8000, Nt=8000)
 OPI <- list(Np=200, Ne=1, Ns=1, Nt=1)
@@ -345,10 +401,10 @@ approx.policy.iteration <- function(config) {
         D <- generate.sample(mu[[k]], config$Ns)
         
         # (2.c) train parameter vector
-        
+        r <- train.nns(D, config$Nt) 
         
         # (2.d) set new policy
-        mu[[k+1]] <- mu[[k]]
+        mu[[k+1]] <- update.policy(mu[[k]], r)
     }
     
     return(J)
