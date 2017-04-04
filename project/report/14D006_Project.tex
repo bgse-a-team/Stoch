@@ -41,28 +41,29 @@
 % Motivation %
 %%%%%%%%
 \section{Motivation}
-In the following sections we assume some basic understanding of the American football rules.
+In the following sections we assume some basic understanding of the American football rules. We use a dynamic programming algorithm to develop an optimal policy for play choice in an American football game. In this context, the policies refer to the different plays an American football team can make at each game situation. At every field postition, the aim of the team is to choose among different possible options, such as run, pass, kick and punt, which will be explained in more detail in the next section, the one which increases the expected reward the most. The reward is the difference in  number of points recieved at the end of our possesion and the anticipated points of the opposition from our final field position. Each option gives the team different advantages at different risks. Dynamic programming works backwards to allow us, given any field position, to make the optimal policy choice. \\
+In this problem, there is a large number of possible states, 15250, which leads to computational difficulties. To solve this, we use simulations to replace the exact reward-to-go function with an approximation that makes the optimisation problem feasible to solve. Approximate Policy Iteration (API) and Optimistic Policy Iteration (OPI) to calculate this approximation.
 
 
 %%%%%%%%%%%%
 % The Football Model %
 %%%%%%%%%%%%
 \section{The Football Model}
-In our American football model we consider the score of one offense drive and add to it the expected points gained by the opposing team from our final field position. More concretely, we want to maximize the expected difference between our drive-score and the opposing team's responding drive-score (which is simply a function of our final field position). \\\\
+In our American football model we consider the score of one offense drive and add to it the expected points gained by the opposing team from our final field position. More concretely, we want to maximize the expected difference between our drive-score and the opposing team's responding drive-score (which is simply a function of our final field position). We now introduce the elements used by the dynamic programming algorithms to solve the optimisation problem. \\\\
 The state of the system $i \in S$ is described by a vector of 3 quantities: $i = [x,y,d]$:
 \begin{itemize}
-\item x = the number of yards to the goal (discrete value between 1 and 100)
+\item x = the number of yards to the opposition goal line (discrete value between 1 and 100)
 \item y = the number of yards to go until the next first down (discrete value between 1 and 100)
 \item d = down number ($\in \{1,2,3,4\}$)
 \end{itemize}
-At each state, the team can choose from one of 4 play options (actions) $u \in U$ with $U=\{R, P, U, K\}$:
+At each state, the team can choose from one of 4 play options (actions) $u \in U$ with $U=\{R, P, U, K\}$. Each play is described using probablility distributions, to model the yards gained. For this section we use the models set out in Bertsekas and Patek's article:
 \begin{itemize}
-\item (R)un: moves $D_p - 2$ yards forward with $D_p \sim \text{Poisson}(6)$ 
-\item (P)ass: moves $D_p - 2$ yards forward with $D_p \sim \text{Poisson}(12)$ 
+\item (R)un: moves $D_p - 2$ yards forward with $D_p \sim \text{Poisson}(6)$, with probability 0.05 of a fumble.
+\item (P)ass: moves $D_p - 2$ yards forward with $D_p \sim \text{Poisson}(12)$, with probability 0.05 of an interception, 0.45 of incompletion, 0.05 of quarterback sack and 0.45 of completion. 
 \item P(u)nt: moves $6 D_p  + 6$ yards forward with $D_p \sim \text{Poisson}(10)$ 
 \item (K)ick: successful with probability $\max(0, .95 - .95x/60)$
 \end{itemize}
-The set of state-action pairs determine the stationary policy $\mu$. The reward of the drive is determined by the final state transition:
+The set of state-action pairs determine the stationary policy $\mu$. We look to choose the policy at any given state to maximise the expected reward. The reward of the drive is determined by the final state transition.:
 \begin{itemize}
 \item Touchdown: 6.8 points (from run or pass) 
 \item Opponent's touchdown: -6.8 points (from run or pass)
@@ -70,15 +71,24 @@ The set of state-action pairs determine the stationary policy $\mu$. The reward 
 \item Field goal: 3.0 points (from kick)
 \item No score due to fumble (from run), interception (from pass), missed 4th down (from pass or run), missed field-goal (from kick) or punt
 \end{itemize}
-Fixed probabilities are assigned to the outcome of each action.
+Once the inputs of the dynamic programming algorithm have been defined, the next step is construct the algorithm itself.
 
 %%%%%%%%%%%%%%%%%%%%
 % Dynamic Programming Formulation %
 %%%%%%%%%%%%%%%%%%%%
 \newpage
 \section{Dynamic Programming Formulation}
-
+In this model of the football problem, the solution can be computed directly. However, the problem can quickly become computationally infeasible when introducing other elements of the game, such as time or half yard intervals. 
 \subsection{Optimal Solution}
+Our original problem has 15250 states. The rules of our model are such that at first down there is a unique value of y associated with each value of x. Note, that the number of possible combinations is much larger than the 15250 that we claim. There is the additional constraint that it is impossible to have the number of yards to next down greater than yards to the goal line, that is, we cannot have $y>x$. \\
+
+This is computationally tractable, so we can apply the dynamic programming algorithm. 
+$$
+\mu^{k}(i) = arg\max\limits_{u \in U} \Big[ \sum\limits_{j \in S} p_{ij}(u)(g(i,u,j) +  J^{\mu^{k-1}}(j))\Big] \quad \forall i \in S
+$$
+This algorithm chooses the policy u  which maximises the expected reward. In the formula above, $i$ represents the state we are currently in and $j$ is the state we move to. $p_{ij}(u)$ are the transition probabilities, giving the probability from moving from state $i$ to state $j$ under action $u$. The reward function is $g(i,u,j)$, which is 0 in every stage except for the terminal state. This is because we only gain rewards after scoring or losing the ball. While $J^{\mu^{k-1}}(j)$ is the reward-to-go  function from the state $j$. \\
+
+Using this exact method we obtain an optimal policy for any state of the 4 downs. These optimal policies can been in Figure 1,1 in Bertsekas and Patek. As a benchmark, using this policy from the state $(x,y,d)=(80,10,1)$ and running simulations with the optimal policy, the expected net reward is -0.9449 points. This means that if we start each drive in this state, we are expected to lose the game!
 
 \subsection{Approximation with Neuro-Dynamic Programming}
 
