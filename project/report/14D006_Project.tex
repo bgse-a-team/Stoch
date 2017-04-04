@@ -1,0 +1,122 @@
+\documentclass[11pt, oneside]{article}   	% use "amsart" instead of "article" for AMSLaTeX format
+\usepackage{geometry}                		% See geometry.pdf to learn the layout options. There are lots.
+\geometry{letterpaper}                   		% ... or a4paper or a5paper or ...
+%\geometry{landscape}                		% Activate for rotated page geometry
+%\usepackage[parfill]{parskip}    		% Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{graphicx}				% Use pdf, png, jpg, or eps§ with pdflatex; use eps in DVI mode
+								% TeX will automatically convert eps --> pdf in pdflatex
+								\usepackage[bb=boondox]{mathalfa}
+\usepackage{mathtools}
+\usepackage{amssymb}
+\usepackage{amsmath,amsfonts,amsthm} % Math packages
+\usepackage{bm}
+\usepackage{graphicx}
+\usepackage{dsfont}
+\graphicspath{ {images/} }
+
+%SetFonts
+
+%SetFonts
+
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\newcommand{\horrule}[1]{\rule{\linewidth}{#1}} % Create horizontal rule command with 1 argument of height
+
+\title{
+\normalfont \normalsize
+\textsc{14D006 Stochastic Models and Optimization} \\ [25pt] % Your university, school and/or department name(s)
+\horrule{0.5pt} \\[0.4cm] % Thin top horizontal rule
+\huge Play Selection in American Football\\ % The assignment title
+\horrule{2pt} \\[0.5cm] % Thick bottom horizontal rule
+}
+
+\author{Daniel Bestard, Michael Cameron, Hans-Peter H{\"o}llwirth, Akhil Lohia} % Your name
+
+\date{\normalsize\today} % Today's date or a custom date
+
+\begin{document}
+\maketitle
+
+%%%%%%%%
+% Motivation %
+%%%%%%%%
+\section{Motivation}
+In the following sections we assume some basic understanding of the American football rules.
+
+
+%%%%%%%%%%%%
+% The Football Model %
+%%%%%%%%%%%%
+\section{The Football Model}
+In our American football model we consider the score of one offense drive and add to it the expected points gained by the opposing team from our final field position. More concretely, we want to maximize the expected difference between our drive-score and the opposing team's responding drive-score (which is simply a function of our final field position). \\\\
+The state of the system $i \in S$ is described by a vector of 3 quantities: $i = [x,y,d]$:
+\begin{itemize}
+\item x = the number of yards to the goal (discrete value between 1 and 100)
+\item y = the number of yards to go until the next first down (discrete value between 1 and 100)
+\item d = down number ($\in \{1,2,3,4\}$)
+\end{itemize}
+At each state, the team can choose from one of 4 play options (actions) $u \in U$ with $U=\{R, P, U, K\}$:
+\begin{itemize}
+\item (R)un: moves $D_p - 2$ yards forward with $D_p \sim \text{Poisson}(6)$ 
+\item (P)ass: moves $D_p - 2$ yards forward with $D_p \sim \text{Poisson}(12)$ 
+\item P(u)nt: moves $6 D_p  + 6$ yards forward with $D_p \sim \text{Poisson}(10)$ 
+\item (K)ick: successful with probability $\max(0, .95 - .95x/60)$
+\end{itemize}
+The set of state-action pairs determine the stationary policy $\mu$. The reward of the drive is determined by the final state transition:
+\begin{itemize}
+\item Touchdown: 6.8 points (from run or pass) 
+\item Opponent's touchdown: -6.8 points (from run or pass)
+\item Safety: -2.0 points (from pass or run)
+\item Field goal: 3.0 points (from kick)
+\item No score due to fumble (from run), interception (from pass), missed 4th down (from pass or run), missed field-goal (from kick) or punt
+\end{itemize}
+Fixed probabilities are assigned to the outcome of each action.
+
+%%%%%%%%%%%%%%%%%%%%
+% Dynamic Programming Formulation %
+%%%%%%%%%%%%%%%%%%%%
+\newpage
+\section{Dynamic Programming Formulation}
+
+\subsection{Optimal Solution}
+
+\subsection{Approximation with Neuro-Dynamic Programming}
+
+%%%%%%%%%%%%%
+% Heuristic Benchmark %
+%%%%%%%%%%%%%
+\section{Heuristic Benchmark}
+
+
+%%%%%%%%%
+% API and OPI %
+%%%%%%%%%
+\section{Approximate and Optimistic Policy Iteration}
+
+\subsection{Simulation of Sample Trajectories}
+
+\subsection{Multilayer Perceptron (MLP)}
+
+\subsection{Policy Update}
+
+%%%%%%
+% Results %
+%%%%%%
+\section{Results}
+
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
