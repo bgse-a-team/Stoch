@@ -86,11 +86,36 @@ Fixed probabilities are assigned to the outcome of each action.
 % Simulation %
 %%%%%%%%
 \section{Simulation}
+The approximations of the reward-to-go function $J_{u_k}(i^*)$ are obtained from simulated sample trajectories. The simulation routine takes as inputs a policy $\mu$ and a starting state $i^*$ and then generates $N$ sample drives. Each generated sample drive represents a realization of the following probabilistic model (probabilities in brackets):
+\begin{itemize}
+\item (R)un attempts result in either
+\begin{itemize}
+\item (0.05) fumble
+\item (0.95) run with movement $D_r -2$ with $D_r \sim \text{Poisson}(6)$
+\end{itemize}
+\item (P)ass attempts result in either
+\begin{itemize}
+\item (0.05) pass interception with movement $D_p -2$ with $D_p \sim \text{Poisson}(12)$
+\item (0.05) sack with movement $D_s$ with $D_s \sim \text{Poisson}(6)$
+\item (0.45) pass incomplete
+\item (0.45) pass complete with movement $D_p -2$ with $D_p \sim \text{Poisson}(12)$
+\end{itemize}
+\item P(U)nt attempts always result in turn-over with movement $6 D_p + 6$ with $D_p \sim \text{Poisson}(10)$ 
+\item (K)ick attempts result in either
+\begin{itemize}
+\item (max(0,(0.95-0.95x/60)) successful field goal
+\item (otherwise) missed field goal
+\end{itemize}
+\end{itemize}
+
+The drive terminates in any of the following events:
+
+The simulation returns $N$ sample drives. Each drive $l$ is described by its status sequence $(i_t^l)$ for $t=1,...,T^l$ and reward $g_{T^i}^l$.
 
 \subsection{Expected Reward}
 Given a set of $N$ simulated sample trajectories for a specific policy $\mu$, we can estimate the expected reward of this policy from a starting state $i^*$:
 $$
-J_{u_k}(i^*) = \frac{1}{N}\sum_{i=1}^N g_{T^i}^i
+\widetilde{J}_{u_k}(i^*) = \frac{1}{N}\sum_{l=1}^N g_{T^i}^l
 $$
 where $g_{T^i}^i$ denotes the reward of the $i^{th}$ sample trajectory with drive length $T^i$.
 
@@ -135,7 +160,7 @@ Rhe simulations and the expected reward function can be used to yield a heuristi
 
 \end{enumerate}
 
-We estimated the expected reward for each of the $2^4*3^4 = 1296$ heuristic policy combinations from starting position $i^* = (x=80, y=10, d=1)$ (one of the most likely starting positions in football) and found the best heuristic expected reward-to-go to be $-1.26$. The associated policy to this reward is highlighted in bold. Note that the reward-to-go matches the heuristic result of the underlying paper, thus establishing the correctness of the simulation algorithm.
+We estimated the expected reward for each of the $2^4*3^4 = 1296$ heuristic policy combinations from starting position $i^* = (x=80, y=10, d=1)$ (one of the most likely starting positions in football) and found the best heuristic expected reward-to-go $J_{\mu}(i^*) = -1.26$. The associated policy to this reward is highlighted in bold. Note that the reward-to-go matches the heuristic result of the underlying paper, thus establishing the correctness of the simulation algorithm.
 
 %%%%%%%%%
 % API and OPI %
@@ -145,6 +170,12 @@ We estimated the expected reward for each of the $2^4*3^4 = 1296$ heuristic poli
 
 
 \subsection{Multilayer Perceptron (MLP)}
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=155mm]{../images/neuralnet.png}
+\caption{Architecture of neural network with one hidden layer ($R=20$ nodes)}
+\end{figure}
 
 \subsection{Policy Update}
 
