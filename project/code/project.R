@@ -57,8 +57,8 @@ simulate.drive <- function(mu, i.start=NA) {
     
     # initial state
     i[[t]] <- i.start
-    # if (is.na(i.start))
-    #     i[[t]] <- initial.condition()
+    if (is.na(i.start))
+        i[[t]] <- initial.condition()
     
     terminated <- FALSE
     while(!terminated) {
@@ -178,8 +178,7 @@ expected.reward <- function(mu, i.start, Ne=10000) {
     return(m)
 }
 
-i.start <- list(d=1, x=80, y=10)
-
+#i.start <- list(d=1, x=80, y=10)
 #expected.reward(mu, i.start)
 
 # ----------------------------------------------------------------------
@@ -402,19 +401,12 @@ transition.prob <- function(D, mu) {
     return(p)
 }
 
-# compute down for particular transition
-# transition.down <- function(i, jx, jy) {
-#    if (jy == min(i$x,10) & jx < i$x) {
-#    }
-#}
-
 # get reward-to-go approximation for status i from neural network output
 J.approx <- function(Js, i) {
     return(Js[[i$d]][Js[[i$d]][,1]==i$x & Js[[i$d]][,2]==i$y,3])
 }
 
-
-
+# update policy based on new neural network setup r
 update.policy <- function(mu, r, D) {
     U <- c('P','R','U','K')
     Js <- estimate.Js(r)
