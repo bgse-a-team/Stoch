@@ -12,7 +12,10 @@
 rm(list = ls())
 
 # load libraries
-library(neuralnet)
+#library(neuralnet)
+if(!require(nnet)) {
+  install.packages('nnet')
+}
 library(nnet)
 
 # ----------------------------------------------------------------------
@@ -483,3 +486,4 @@ approx.policy.iteration <- function(config) {
 }
 
 J <- approx.policy.iteration(config)
+write.csv(J, 'Jresult.csv')
