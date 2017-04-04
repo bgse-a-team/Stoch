@@ -57,6 +57,13 @@ The state of the system $i \in S$ is described by a vector of 3 quantities: $i =
 \item y = the number of yards to go until the next first down (discrete value between 1 and 100)
 \item d = down number ($\in \{1,2,3,4\}$)
 \end{itemize}
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=155mm]{../images/field.png}
+\caption{Illustration of state}
+\end{figure}
+
 At each state, the team can choose from one of 4 play options (actions) $u \in U$ with $U=\{R, P, U, K\}$. Each play is described using probablility distributions, to model the yards gained. For this section we use the models set out in Bertsekas and Patek's article:
 \begin{itemize}
 \item (R)un: moves $D_p - 2$ yards forward with $D_p \sim \text{Poisson}(6)$, with probability 0.05 of a fumble.
@@ -179,6 +186,21 @@ We estimated the expected reward for each of the $2^4*3^4 = 1296$ heuristic poli
 \section{Approximate and Optimistic Policy Iteration}
 The aim now is to approximate the reward-to-go function to be used in the policy update algorithm, We have two different approaches to this problem, API and OPI. In API, we run many drive simulations over few different policies. While in contrast, for OPI, we run much fewer simulations, but over much more policy choices.
 
+We now describe in detail how the algorithms API and OPI are implemented in practice. Let $N_{p}$, $N_{e}$ , $N_{s}$ and $N_{t}$ denote the parameters of the algorithm which are set by the user in advance. Even thought the definition of these parameters can be inferred from the algorithm, it is more clear to define them separately:
+\begin{itemize}
+    \item $N_{p}$: if, for example, $N_{p}=20$, then in every 20th iteration we compute the expected reward-to-go.
+    \item $N_{e}$: number of sample trajectories that we use to compute the estimate of the reward-to-go function.
+    \item $N_{s}$: number of sample trajectories in the in training set $D_{k}$ (see later).
+    \item $N_{t}$: number of times we train the neural network.
+\end{itemize}
+The implementation of the algorithm is as follows:
+\begin{enumerate}
+    \item Start an initial policy $\mu_{0}$.
+    \item Given $\mu_{k}$, if $k \in \{j \cdot N_{p} | j=0,1,2,…\}$, then generate $N_{e}$ sample trajectories, each starting from $i^{*}$, to obtain an estimate of $J_{\mu_{k}}(i^{*})$
+    \item Given the probabilistic rule for picking initial conditions, generate $N_{s}$ sample trajectories and record $D_{k}$, where the last element is simply an object that stores the reward and the sequence of the vector of states. $D_{k}$ is created because we use its elements in the next step of the algorithm.
+    \item We fit the neural networks to estimate the reward-to-go function and save the object in a variable that we call $r^{k}$ which uses the elements of $D_{k}$. The neural networks cycle through the data $N_{t}$ times.
+    \item Compute a new policy $\mu_{k+1} := G(r^{k})$, where $G$ is the “greedy” operator which chooses the actions at each state that are best with respect to the reward-to-go approximation given by $r^{k}$.
+\end{enumerate}
 
 \subsection{Multilayer Perceptron (MLP)}
 
