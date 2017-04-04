@@ -170,7 +170,7 @@ expected.reward <- function(mu, i.start, Ne=10000) {
 }
 
 i.start <- list(d=1, x=80, y=10)
-expected.reward(mu, i.start)
+#expected.reward(mu, i.start)
 
 # ----------------------------------------------------------------------
 # Generate samples for a given policy
@@ -221,11 +221,11 @@ get.heuristic.policy <- function(options) {
     for (x in 1:100) {
         for (y in 1:x) {
             if (x < 41) {
-                if (y < 3) mu[[2]][x,y] <- options$o4a1
-                else       mu[[2]][x,y] <- options$o4a2
+                if (y < 3) mu[[4]][x,y] <- options$o4a1
+                else       mu[[4]][x,y] <- options$o4a2
             } else {
-                if (y < 3) mu[[2]][x,y] <- options$o4b1
-                else       mu[[2]][x,y] <- options$o4b2
+                if (y < 3) mu[[4]][x,y] <- options$o4b1
+                else       mu[[4]][x,y] <- options$o4b2
             }
         }
     }    
@@ -255,7 +255,7 @@ best.heuristic.policy <- function() {
                                                     o3b2=down3.options[o3b2],
                                                     o4a1=down4.a.options[o4a1],
                                                     o4a2=down4.a.options[o4a2],
-                                                    o4b1=down4.b.options[o4a1],
+                                                    o4b1=down4.b.options[o4b1],
                                                     o4b2=down4.b.options[o4b2])
                                     mu <- get.heuristic.policy(options)
                                     
@@ -457,4 +457,4 @@ approx.policy.iteration <- function(config) {
     return(J)
 }
 
-J <- approx.policy.iteration(OPI)
+#J <- approx.policy.iteration(OPI)
