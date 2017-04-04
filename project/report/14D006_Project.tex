@@ -5,7 +5,7 @@
 %\usepackage[parfill]{parskip}    		% Activate to begin paragraphs with an empty line rather than an indent
 \usepackage{graphicx}				% Use pdf, png, jpg, or eps§ with pdflatex; use eps in DVI mode
 								% TeX will automatically convert eps --> pdf in pdflatex
-								\usepackage[bb=boondox]{mathalfa}
+\usepackage[bb=boondox]{mathalfa}
 \usepackage{mathtools}
 \usepackage{amssymb}
 \usepackage{amsmath,amsfonts,amsthm} % Math packages
@@ -35,6 +35,7 @@
 \date{\normalsize\today} % Today's date or a custom date
 
 \begin{document}
+
 \maketitle
 
 %%%%%%%%
@@ -151,7 +152,7 @@ We estimated the expected reward for each of the $2^4*3^4 = 1296$ heuristic poli
 % API and OPI %
 %%%%%%%%%
 \section{Approximate and Optimistic Policy Iteration}
-
+The aim now is to approximate the reward-to-go function to be used in the policy update algorithm, We have two different approaches to this problem, API and OPI. In API, we run many drive simulations over few different policies. While in contrast, for OPI, we run much fewer simulations, but over much more policy choices.
 
 
 \subsection{Multilayer Perceptron (MLP)}
