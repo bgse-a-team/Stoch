@@ -204,7 +204,7 @@ dummy.heuristic.policy <- function() {
     mu[[2]][,1:3] <- 'R' 
     
     mu[[3]] <- matrix('R',100,100)
-    mu[[4]] <- matrix('R',100,100)
+    mu[[4]] <- matrix('U',100,100)
     
     return(mu)
 }
@@ -331,9 +331,11 @@ df.sample <- function(D, down) {
 train.nn <- function(D, down, Nt, R) {
     
     df <- df.sample(D, down)
-    start.weights <- runif((R*2) + 2*R + 1)
-    start.weights <- rep(0.1, (R*2) + 2*R + 1)
-    r <- neuralnet(formula = J ~ x + y, data=df, hidden=R, rep=1, startweights=start.weights)
+    #start.weights <- runif((R*2) + 2*R + 1)
+    #start.weights <- rep(0.1, (R*2) + 2*R + 1)
+    #r <- neuralnet(formula = J ~ x + y, learningrate = 0.0000001, data=df, hidden=R, rep=1,
+    #               startweights=NULL, algorithm = 'backprop')
+    r <- neuralnet(formula = J ~ x + y, data=df, hidden=R, rep=1, algorithm = 'slr')
     return(r)
 }
 
@@ -467,7 +469,7 @@ approx.policy.iteration <- function(config) {
         
         # (2.c) train parameter vector
         cat('.')
-        r <- train.nns(D, config$Nt) 
+        r <- train.nns(D, config$Nt, R=20) 
         
         # (2.d) set new policy
         cat('.')
