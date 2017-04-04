@@ -97,11 +97,36 @@ Using this exact method we obtain an optimal policy for any state of the 4 downs
 % Simulation %
 %%%%%%%%
 \section{Simulation}
+The approximations of the reward-to-go function $J_{u_k}(i^*)$ are obtained from simulated sample trajectories. The simulation routine takes as inputs a policy $\mu$ and a starting state $i^*$ and then generates $N$ sample drives. Each generated sample drive represents a realization of the following probabilistic model (probabilities in brackets):
+\begin{itemize}
+\item (R)un attempts result in either
+\begin{itemize}
+\item (0.05) fumble
+\item (0.95) run with movement $D_r -2$ with $D_r \sim \text{Poisson}(6)$
+\end{itemize}
+\item (P)ass attempts result in either
+\begin{itemize}
+\item (0.05) pass interception with movement $D_p -2$ with $D_p \sim \text{Poisson}(12)$
+\item (0.05) sack with movement $D_s$ with $D_s \sim \text{Poisson}(6)$
+\item (0.45) pass incomplete
+\item (0.45) pass complete with movement $D_p -2$ with $D_p \sim \text{Poisson}(12)$
+\end{itemize}
+\item P(U)nt attempts always result in turn-over with movement $6 D_p + 6$ with $D_p \sim \text{Poisson}(10)$ 
+\item (K)ick attempts result in either
+\begin{itemize}
+\item (max(0,(0.95-0.95x/60)) successful field goal
+\item (otherwise) missed field goal
+\end{itemize}
+\end{itemize}
+
+The drive terminates in any of the following events:
+
+The simulation returns $N$ sample drives. Each drive $l$ is described by its status sequence $(i_t^l)$ for $t=1,...,T^l$ and reward $g_{T^i}^l$.
 
 \subsection{Expected Reward}
 Given a set of $N$ simulated sample trajectories for a specific policy $\mu$, we can estimate the expected reward of this policy from a starting state $i^*$:
 $$
-J_{u_k}(i^*) = \frac{1}{N}\sum_{i=1}^N g_{T^i}^i
+\widetilde{J}_{u_k}(i^*) = \frac{1}{N}\sum_{l=1}^N g_{T^i}^l
 $$
 where $g_{T^i}^i$ denotes the reward of the $i^{th}$ sample trajectory with drive length $T^i$.
 
@@ -146,7 +171,7 @@ Rhe simulations and the expected reward function can be used to yield a heuristi
 
 \end{enumerate}
 
-We estimated the expected reward for each of the $2^4*3^4 = 1296$ heuristic policy combinations from starting position $i^* = (x=80, y=10, d=1)$ (one of the most likely starting positions in football) and found the best heuristic expected reward-to-go to be $-1.26$. The associated policy to this reward is highlighted in bold. Note that the reward-to-go matches the heuristic result of the underlying paper, thus establishing the correctness of the simulation algorithm.
+We estimated the expected reward for each of the $2^4*3^4 = 1296$ heuristic policy combinations from starting position $i^* = (x=80, y=10, d=1)$ (one of the most likely starting positions in football) and found the best heuristic expected reward-to-go $J_{\mu}(i^*) = -1.26$. The associated policy to this reward is highlighted in bold. Note that the reward-to-go matches the heuristic result of the underlying paper, thus establishing the correctness of the simulation algorithm.
 
 %%%%%%%%%
 % API and OPI %
@@ -156,7 +181,17 @@ The aim now is to approximate the reward-to-go function to be used in the policy
 
 
 \subsection{Multilayer Perceptron (MLP)}
+<<<<<<< HEAD
 As stated ealier in the report, we can replace the exact values of the reward-to-go function with approximates. To obtain these estimates we can use a trained neural network. The network has 2 inputs $x$ and $y$, one hidden layer with 20 nodes, and is trained on the exact output $J$. We construct 4 of these networks, one for each possible down. For each of these neural networks we input the feature vector $\xi^{\Sigma}(i) = (\sigma_{d}^{x} x_{i}, \sigma_{d}^{y} y_{i})$, In the football example we set $\sigma_{d}^{x} = \sigma_{d}^{y} = 0.01$ to ensure that all elements of $\xi^{\Sigma}(i)$ are in $[0,1]$. This now allows us to get an estimate for the reward-to-go function from any state, by inputting $x$ and $y$ in the feature vectors into the correct neural network depending on the down. 
+=======
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=155mm]{../images/neuralnet.png}
+\caption{Architecture of neural network with one hidden layer ($R=20$ nodes)}
+\end{figure}
+
+>>>>>>> e956e5585327ce44206d5ee9fffffa05616a3931
 \subsection{Policy Update}
 
 %%%%%%
