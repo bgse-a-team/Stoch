@@ -326,7 +326,7 @@ df.sample <- function(D, down) {
             }
         }
     } 
-    colnames(df) <- c('x', 'y', 'J')
+    if (row>1) colnames(df) <- c('x', 'y', 'J')
     return(df)
 }
 
@@ -340,7 +340,8 @@ train.nn <- function(D, down, Nt, R) {
     #r <- neuralnet(formula = J ~ x + y, learningrate = 0.01, 
     #               data=df, hidden=R, rep=1, algorithm = 'backprop', startweights = start.weights)
     #r <- neuralnet(formula = J ~ x + y, data=df, hidden=20, rep=1)
-    r <- nnet(formula = J ~ x + y, data=df, size=R, linout = TRUE)
+    if (nrow(df) > 0) {r <- nnet(formula = J ~ x + y, data=df, size=R, linout = TRUE) }
+    else {r <- NA}
     return(r)
 }
 
@@ -360,7 +361,12 @@ estimate.Js <- function(r) {
     colnames(df) <- c('x','y')
     for (d in 1:4) {
         #J[[d]] <- cbind(df, compute(r[[d]], covariate=df)$net.result)
-        J[[d]] <- cbind(df, predict(r[[d]], df))
+        if (all(!is.na(r[[d]]))) {
+            J[[d]] <- cbind(df, predict(r[[d]], df))
+        }
+        else {
+            J[[d]] <- cbind(df,0)
+        }
     }
     return(J)
 }
@@ -451,7 +457,7 @@ update.policy <- function(mu, r, D) {
 # (4) API and OPI
 # ----------------------------------------------------------------------
 API <- list(Np=1, Ne=8000, Ns=8000, Nt=8000)
-OPI <- list(Np=200, Ne=1, Ns=1, Nt=1)
+OPI <- list(Np=1, Ne=10000, Ns=1, Nt=1)
 config <- list(Np=1, Ne=10000, Ns=100, Nt=100) # for test purposes
 
 approx.policy.iteration <- function(config) {
@@ -462,7 +468,7 @@ approx.policy.iteration <- function(config) {
     mu <- list()
     mu[[1]] <- dummy.heuristic.policy()
     
-    for (k in 1:5) {
+    for (k in 1:50) {
         # (2.a) obtain estimate for expected reward 
         if (k %% config$Np == 0) {
             J <- c(J, expected.reward(mu[[k]], i.start, config$Ne))
@@ -480,10 +486,12 @@ approx.policy.iteration <- function(config) {
         # (2.d) set new policy
         cat('.')
         mu[[k+1]] <- update.policy(mu[[k]], r, D)
+        #mu[[k+1]] <- mu[[k]]
     }
     J <- c(J, expected.reward(mu[[k+1]], i.start, config$Ne))
     return(J)
 }
 
-J <- approx.policy.iteration(config)
+J <- approx.policy.iteration(OPI)
+config <- OPI
 write.csv(J, 'Jresult.csv')
