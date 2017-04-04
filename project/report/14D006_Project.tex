@@ -156,7 +156,7 @@ The aim now is to approximate the reward-to-go function to be used in the policy
 
 
 \subsection{Multilayer Perceptron (MLP)}
-
+As stated ealier in the report, we can replace the exact values of the reward-to-go function with approximates. To obtain these estimates we can use a trained neural network. The network has 2 inputs $x$ and $y$, one hidden layer with 20 nodes, and is trained on the exact output $J$. We construct 4 of these networks, one for each possible down. For each of these neural networks we input the feature vector $\xi^{\Sigma}(i) = (\sigma_{d}^{x} x_{i}, \sigma_{d}^{y} y_{i})$, In the football example we set $\sigma_{d}^{x} = \sigma_{d}^{y} = 0.01$ to ensure that all elements of $\xi^{\Sigma}(i)$ are in $[0,1]$. This now allows us to get an estimate for the reward-to-go function from any state, by inputting $x$ and $y$ in the feature vectors into the correct neural network depending on the down. 
 \subsection{Policy Update}
 
 %%%%%%
