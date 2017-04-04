@@ -13,6 +13,7 @@ rm(list = ls())
 
 # load libraries
 library(neuralnet)
+library(nnet)
 
 # ----------------------------------------------------------------------
 # Initialize starting position
@@ -58,7 +59,6 @@ simulate.drive <- function(mu, i.start=NA) {
     # initial state
     i[[t]] <- i.start
     if (all(is.na(i.start))) {
-        print('start point is NA')
         i[[t]] <- initial.condition()
     }
     
@@ -329,13 +329,15 @@ df.sample <- function(D, down) {
 
 # train neural network for particular down
 train.nn <- function(D, down, Nt, R) {
-    
     df <- df.sample(D, down)
-    #start.weights <- runif((R*2) + 2*R + 1)
+    #start.weights <- rnorm((R*2) + 2*R + 1)
     #start.weights <- rep(0.1, (R*2) + 2*R + 1)
     #r <- neuralnet(formula = J ~ x + y, learningrate = 0.0000001, data=df, hidden=R, rep=1,
     #               startweights=NULL, algorithm = 'backprop')
-    r <- neuralnet(formula = J ~ x + y, data=df, hidden=R, rep=1, algorithm = 'slr')
+    #r <- neuralnet(formula = J ~ x + y, learningrate = 0.01, 
+    #               data=df, hidden=R, rep=1, algorithm = 'backprop', startweights = start.weights)
+    #r <- neuralnet(formula = J ~ x + y, data=df, hidden=20, rep=1)
+    r <- nnet(formula = J ~ x + y, data=df, size=R, linout = TRUE)
     return(r)
 }
 
@@ -352,8 +354,10 @@ train.nns <- function(D, Nt=100, R=20) {
 estimate.Js <- function(r) {
     J <- list()
     df <- expand.grid(seq(1,100), seq(1,100))
+    colnames(df) <- c('x','y')
     for (d in 1:4) {
-        J[[d]] <- cbind(df, compute(r[[d]], covariate=df)$net.result)
+        #J[[d]] <- cbind(df, compute(r[[d]], covariate=df)$net.result)
+        J[[d]] <- cbind(df, predict(r[[d]], df))
     }
     return(J)
 }
@@ -422,7 +426,6 @@ update.policy <- function(mu, r, D) {
             i <- D[[l]]$i[[t]]
             s <- rep(0,4)
             for (u in 1:length(U)) {
-                
                 for(jd in 1:4) {
                     for (jx in 1:100) {
                         for (jy in 1:100) {
@@ -434,7 +437,7 @@ update.policy <- function(mu, r, D) {
                     }
                 }
             }
-            print(s)
+            # print(s)
             mu[[i$d]][i$x,i$y] <- U[which.max(s)]
         }
     }
@@ -446,7 +449,7 @@ update.policy <- function(mu, r, D) {
 # ----------------------------------------------------------------------
 API <- list(Np=1, Ne=8000, Ns=8000, Nt=8000)
 OPI <- list(Np=200, Ne=1, Ns=1, Nt=1)
-config <- list(Np=1, Ne=100, Ns=100, Nt=100) # for test purposes
+config <- list(Np=1, Ne=10000, Ns=100, Nt=100) # for test purposes
 
 approx.policy.iteration <- function(config) {
     i.start <- list(d=1, x=80, y=10)
@@ -456,11 +459,11 @@ approx.policy.iteration <- function(config) {
     mu <- list()
     mu[[1]] <- dummy.heuristic.policy()
     
-    for (k in 1:100) {
+    for (k in 1:5) {
         # (2.a) obtain estimate for expected reward 
         if (k %% config$Np == 0) {
             J <- c(J, expected.reward(mu[[k]], i.start, config$Ne))
-            print(expected.reward(mu[[k]], i.start, config$Ne))
+            print(J)
         }
         
         # (2.b) generate sample trajectories
@@ -475,7 +478,7 @@ approx.policy.iteration <- function(config) {
         cat('.')
         mu[[k+1]] <- update.policy(mu[[k]], r, D)
     }
-    
+    J <- c(J, expected.reward(mu[[k+1]], i.start, config$Ne))
     return(J)
 }
 
