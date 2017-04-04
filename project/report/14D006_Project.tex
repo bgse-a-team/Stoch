@@ -42,15 +42,18 @@
 % Motivation %
 %%%%%%%%
 \section{Motivation}
-In the following sections we assume some basic understanding of the American football rules. We use a dynamic programming algorithm to develop an optimal policy for play choice in an American football game. In this context, the policies refer to the different plays an American football team can make at each game situation. At every field postition, the aim of the team is to choose among different possible options, such as run, pass, kick and punt, which will be explained in more detail in the next section, the one which increases the expected reward the most. The reward is the difference in  number of points recieved at the end of our possesion and the anticipated points of the opposition from our final field position. Each option gives the team different advantages at different risks. Dynamic programming works backwards to allow us, given any field position, to make the optimal policy choice. \\
-In this problem, there is a large number of possible states, 15250, which leads to computational difficulties. To solve this, we use simulations to replace the exact reward-to-go function with an approximation that makes the optimisation problem feasible to solve. Approximate Policy Iteration (API) and Optimistic Policy Iteration (OPI) to calculate this approximation.
+We consider the dynamic programming framework to compute an optimal policy for play choice in an American football game for one drive from the view of the offensive team. In this context, the policies refer to the different plays an offensive team can make at each game situation. At every field position, the aim of the team is to choose among different possible options (run, pass, kick or punt) such that the expected reward is maximized. The reward is defined as the difference in number of points received at the end of the team's possession and the anticipated points of the opposition from our final field position. \\
+
+We consider policy iteration algorithms for this task. The large number of possible states in the system (15,250), makes it hard to find the optimal solution numerically. Instead, we consider neuro-dynamic programming algorithms which approximate the optimal solution. In particular, we apply Approximate Policy Iteration (API) and Optimistic Policy Iteration (OPI) to estimate the reward-to-go function from simulated sample drives.\\
+
+The project is based on the paper "Play Selection in American Football: A Case Study in Neuro-Dynamic Programming" by Patek and Bertsekas (1997). In the following sections we assume some basic understanding of the American football rules. 
 
 
 %%%%%%%%%%%%
 % The Football Model %
 %%%%%%%%%%%%
 \section{The Football Model}
-In our American football model we consider the score of one offense drive and add to it the expected points gained by the opposing team from our final field position. More concretely, we want to maximize the expected difference between our drive-score and the opposing team's responding drive-score (which is simply a function of our final field position). We now introduce the elements used by the dynamic programming algorithms to solve the optimisation problem. \\\\
+In our American football model we consider the score of one offense drive and add to it the expected points gained by the opposing team from our final field position. More concretely, we want to maximize the expected difference between our drive-score and the opposing team's responding drive-score (which is simply a function of our final field position). We now introduce the elements used by the dynamic programming algorithms to solve the optimization problem. \\\\
 The state of the system $i \in S$ is described by a vector of 3 quantities: $i = [x,y,d]$:
 \begin{itemize}
 \item x = the number of yards to the opposition goal line (discrete value between 1 and 100)
@@ -64,7 +67,7 @@ The state of the system $i \in S$ is described by a vector of 3 quantities: $i =
 \caption{Illustration of state}
 \end{figure}
 
-At each state, the team can choose from one of 4 play options (actions) $u \in U$ with $U=\{R, P, U, K\}$. Each play is described using probablility distributions, to model the yards gained. For this section we use the models set out in Bertsekas and Patek's article:
+At each state, the team can choose from one of 4 play options (actions) $u \in U$ with $U=\{R, P, U, K\}$. Each play is described using probability distributions, to model the yards gained. For this section we use the models set out in Bertsekas and Patek's article:
 \begin{itemize}
 \item (R)un: moves $D_p - 2$ yards forward with $D_p \sim \text{Poisson}(6)$, with probability 0.05 of a fumble.
 \item (P)ass: moves $D_p - 2$ yards forward with $D_p \sim \text{Poisson}(12)$, with probability 0.05 of an interception, 0.45 of incompletion, 0.05 of quarterback sack and 0.45 of completion. 
@@ -87,6 +90,8 @@ Once the inputs of the dynamic programming algorithm have been defined, the next
 \newpage
 \section{Dynamic Programming Formulation}
 In this model of the football problem, the solution can be computed directly. However, the problem can quickly become computationally infeasible when introducing other elements of the game, such as time or half yard intervals. 
+
+%% comment: optimal solution not implemented. should be written as motivation for approximation solution!!
 \subsection{Optimal Solution}
 Our original problem has 15250 states. The rules of our model are such that at first down there is a unique value of y associated with each value of x. Note, that the number of possible combinations is much larger than the 15250 that we claim. There is the additional constraint that it is impossible to have the number of yards to next down greater than yards to the goal line, that is, we cannot have $y>x$. \\
 
@@ -125,10 +130,16 @@ The approximations of the reward-to-go function $J_{u_k}(i^*)$ are obtained from
 \item (otherwise) missed field goal
 \end{itemize}
 \end{itemize}
-
-The drive terminates in any of the following events:
-
-The simulation returns $N$ sample drives. Each drive $l$ is described by its status sequence $(i_t^l)$ for $t=1,...,T^l$ and reward $g_{T^i}^l$.
+No reward is earned in any state transition, except for the case where the drive terminates. The drive terminates in any of the following events:
+\begin{itemize}
+\item touchdown (reward: 6.8)
+\item successful field-goal (reward: 3.0)
+\item missed field-goal, punt, fumble, interception (reward: 0.0)
+\item safety (reward: -2.0)
+\item opponent's touchdown (=interception in opponent's endzone) (reward: -6.8)
+\end{itemize}
+Once the drive is terminated, the final field position $x$ of the drive determines the expected points gained by the opposing team: $6.8x/100$. 
+The simulation returns $N$ such sample drives. Each drive $l$ is described by its status sequence $(i_t^l)$ for $t=1,...,T^l$ and reward $g_{T^i}^l$.
 
 \subsection{Expected Reward}
 Given a set of $N$ simulated sample trajectories for a specific policy $\mu$, we can estimate the expected reward of this policy from a starting state $i^*$:
