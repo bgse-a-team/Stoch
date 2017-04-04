@@ -63,7 +63,6 @@ simulate.drive <- function(mu, i.start=NA) {
     terminated <- FALSE
     while(!terminated) {
         u <- mu[[i[[t]]$d]][i[[t]]$x, i[[t]]$y] # policy action
-        #print(u)
         outcome <- runif(1)
         
         # PASS attempt
@@ -116,7 +115,7 @@ simulate.drive <- function(mu, i.start=NA) {
         # PUNT attempt
         if (u == 'U') {
             terminated <- TRUE
-            x <- i[[t]]$x - 6*rpois(1,10) + 6
+            x <- i[[t]]$x - (6*rpois(1,10) + 6)
             if (x < 0) x <- 20
         }   
         
@@ -213,7 +212,7 @@ get.heuristic.policy <- function(options) {
                 else       mu[[3]][x,y] <- options$o3a2
             } else {
                 if (y < 3) mu[[3]][x,y] <- options$o3b1
-                else       mu[[3]][x,y] <- options$o3a2
+                else       mu[[3]][x,y] <- options$o3b2
             }
         }
     }
@@ -278,6 +277,7 @@ best.heuristic.policy <- function() {
 }
 
 best.heuristic <- best.heuristic.policy()
+write.csv(best.heuristic,"bestpolicy.csv")
 
 # result from best.heuristic.policy function
 options.best <- list(o3a1='P', o3a2='P',
@@ -458,6 +458,3 @@ approx.policy.iteration <- function(config) {
 }
 
 J <- approx.policy.iteration(OPI)
-
-
-
