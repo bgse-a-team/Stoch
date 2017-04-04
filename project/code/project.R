@@ -172,12 +172,10 @@ simulate.drive <- function(mu, i.start=NA) {
 # Compute expected reward of given policy and initial state
 # ----------------------------------------------------------------------
 expected.reward <- function(mu, i.start, Ne=10000) {
-    r <- rep(NA,Ne)
-    for (i in 1:Ne) {
-        r[i] <- simulate.drive(mu, i.start)$r
-    }
-    #print(sapply(1:Ne, simulate.drive,mu))
-    return(mean(r, na.rm = TRUE))
+    m <- mean(sapply(1:Ne, function(x) {
+      return(simulate.drive(mu,i.start)$r)
+      }))
+    return(m)
 }
 
 i.start <- list(d=1, x=80, y=10)
