@@ -57,22 +57,27 @@ simulate.drive <- function(mu, i.start=NA) {
     
     # initial state
     i[[t]] <- i.start
-    if (is.na(i.start))
-        i[[t]] <- initial.condition()
+    # if (is.na(i.start))
+    #     i[[t]] <- initial.condition()
     
     terminated <- FALSE
     while(!terminated) {
         u <- mu[[i[[t]]$d]][i[[t]]$x, i[[t]]$y] # policy action
         outcome <- runif(1)
+        flag <- TRUE
         
         # PASS attempt
         if (u == 'P') {
             if (outcome < 0.05) { # interception
                 terminated <- TRUE
-                x <- i[[t]]$x - rpois(1,12) + 2
-                if (x > 100) { # opponent's touchdown
+                x <- i[[t]]$x - (rpois(1,12) - 2)
+                if (x <= 0) { # intercepted in opponent's end zone
+                    x <- 20
+                }
+                else if (x > 100) { # opponent's touchdown
                     x <- 0
                     r <- -6.8
+                    flag <- FALSE
                 }
             } else if (outcome < 0.50) { # pass incomplete
                 x <- i[[t]]$x
@@ -84,7 +89,7 @@ simulate.drive <- function(mu, i.start=NA) {
                     r <- -2.0 
                 }
             } else { # pass complete
-                x <- i[[t]]$x - rpois(1,12) + 2
+                x <- i[[t]]$x - (rpois(1,12) - 2)
                 if (x > 100) { # safety
                     terminated <- TRUE
                     x <- 20
@@ -94,16 +99,21 @@ simulate.drive <- function(mu, i.start=NA) {
         }
         
         # RUN attempt
-        if (u == 'R') {
+        else if (u == 'R') {
             if (outcome < 0.05) { # fumble
                 terminated <- TRUE
                 x <- i[[t]]$x
-                if (x > 100) { # opponent's touchdown
+                if (x <= 0) { # fumbled in opponent's endzone
+                  x <- 20
+                }
+                else if (x > 100) { # opponent's touchdown
                     x <- 0
                     r <- -6.8
-                } 
+                    flag <- FALSE
+                }
+                
             } else { # run
-                x <- i[[t]]$x - rpois(1,6) + 2
+                x <- i[[t]]$x - (rpois(1,6) - 2)
                 if (x > 100) { # safety
                     terminated <- TRUE
                     x <- 20
@@ -113,16 +123,16 @@ simulate.drive <- function(mu, i.start=NA) {
         }  
         
         # PUNT attempt
-        if (u == 'U') {
+        else if (u == 'U') {
             terminated <- TRUE
             x <- i[[t]]$x - (6*rpois(1,10) + 6)
             if (x < 0) x <- 20
         }   
         
         # KICK attempt
-        if (u == 'K') {
+        else if (u == 'K') {
             terminated <- TRUE
-            if (outcome < max(0, 0.95 - 0.95*i[[t]]$x/60)) { # successful field goal
+            if (outcome < max(0, 0.95 - (0.95*(i[[t]]$x))/60)) { # successful field goal
                 x <- 20
                 r <- 3
             } else { # missed field goal
@@ -130,14 +140,14 @@ simulate.drive <- function(mu, i.start=NA) {
             }
         }  
         
-        if (x <= 0) { # touchdown
+        if (x <= 0 & flag==TRUE) { # touchdown
             terminated <- TRUE
             x <- 20 
             r <- 6.8
         }
         
         # increase down
-        d <- i[[t]]$d + 1 
+        d <- (i[[t]]$d) + 1 
         
         # calculate new distance to first down
         y <- i[[t]]$y + x - i[[t]]$x
@@ -154,7 +164,7 @@ simulate.drive <- function(mu, i.start=NA) {
     }
     
     # expected score of opponent's drive
-    r <- r - 6.8*x/100
+    r <- r - ((6.8*x)/100)
     return(list(i=i, r=r))
 }
 
@@ -162,20 +172,20 @@ simulate.drive <- function(mu, i.start=NA) {
 # Compute expected reward of given policy and initial state
 # ----------------------------------------------------------------------
 expected.reward <- function(mu, i.start, Ne=10000) {
-    r <- rep(0,Ne)
-    for (i in 1:Ne) {
-        r[i] <- simulate.drive(mu)$r
-    }
-    return(mean(r))
+    m <- mean(sapply(1:Ne, function(x) {
+      return(simulate.drive(mu,i.start)$r)
+      }))
+    return(m)
 }
 
 i.start <- list(d=1, x=80, y=10)
+
 #expected.reward(mu, i.start)
 
 # ----------------------------------------------------------------------
 # Generate samples for a given policy
 # ----------------------------------------------------------------------
-generate.sample <- function(mu, Ns=10000) {
+generate.sample <- function(mu, Ns=1000) {
     D <- list()
     for (i in 1:Ns) {
         D[[i]] <- simulate.drive(mu)
@@ -200,14 +210,16 @@ dummy.heuristic.policy <- function() {
 
 get.heuristic.policy <- function(options) {
     mu <- list()
-    mu[[1]] <- matrix('P',100,100)
-    mu[[2]] <- matrix('P',100,100)
+    r <- 100
+    c <- 100
+    mu[[1]] <- matrix('P',r,c)
+    mu[[2]] <- matrix('P',r,c)
     mu[[2]][,1:2] <- 'R' 
     
-    mu[[3]] <- matrix('P',100,100)
-    for (x in 1:100) {
+    mu[[3]] <- matrix('P',r,c)
+    for (x in 1:r) {
         for (y in 1:x) {
-            if (x < 41) {
+            if (x < (41)) {
                 if (y < 3) mu[[3]][x,y] <- options$o3a1
                 else       mu[[3]][x,y] <- options$o3a2
             } else {
@@ -217,10 +229,10 @@ get.heuristic.policy <- function(options) {
         }
     }
     
-    mu[[4]] <- matrix('P',100,100)
-    for (x in 1:100) {
+    mu[[4]] <- matrix('P',r,c)
+    for (x in 1:r) {
         for (y in 1:x) {
-            if (x < 41) {
+            if (x < (41)) {
                 if (y < 3) mu[[4]][x,y] <- options$o4a1
                 else       mu[[4]][x,y] <- options$o4a2
             } else {
@@ -280,11 +292,12 @@ best.heuristic.policy <- function() {
 #write.csv(best.heuristic,"bestpolicy.csv")
 
 # result from best.heuristic.policy function
-#options.best <- list(o3a1='P', o3a2='P',
-#                     o3b1='R', o3b2='R',
-#                     o4a1='R', o4a2='P',
-#                     o4b1='R', o4b2='U')
-#expected.reward(get.heuristic.policy(options.best), i.start)
+options.best <- list(o3a1='P', o3a2='P',
+                     o3b1='R', o3b2='P',
+                     o4a1='R', o4a2='K',
+                     o4b1='R', o4b2='U')
+expected.reward(get.heuristic.policy(options.best), i.start)
+
 
 
 # ----------------------------------------------------------------------
