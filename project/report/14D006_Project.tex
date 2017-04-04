@@ -99,7 +99,7 @@ This algorithm chooses the policy u  which maximises the expected reward. In the
 Using this exact method we obtain an optimal policy for any state of the 4 downs. These optimal policies can been in Figure 1,1 in Bertsekas and Patek. As a benchmark, using this policy from the state $(x,y,d)=(80,10,1)$ and running simulations with the optimal policy, the expected net reward is -0.9449 points. This means that if we start each drive in this state, we are expected to lose the game!
 
 \subsection{Approximation with Neuro-Dynamic Programming}
-
+An important part of the implentation of this algorithm is the apporximations of the reward-to-go functions. 
 %%%%%%%%
 % Simulation %
 %%%%%%%%
@@ -214,7 +214,12 @@ As stated ealier in the report, we can replace the exact values of the reward-to
 \end{figure}
 
 \subsection{Policy Update}
-
+Now that we can calculate the approximate reward-to-go function for fixed policies, we can now focus on computing new policies given these approximations. Both API and OPI follow the same outline, given the approximation $\widetilde{J}(i,r^{k-1})$ for a stationary policy $\mu^{k-1}$, compute a new policy $\mu^{k}$ by
+$$
+\mu^{k}(i) = G(r)(i) = arg\max\limits_{u \in U} \Big[ \sum\limits_{j \in S} p_{ij}(u)(g(i,u,j) +  \widetilde{J}(i,r^{k-1}))\Big] \quad \forall i \in S
+$$
+This is very similar to the dynamic programming algorithm we had seen previously, but now we are using the approximations. \\
+To carry out this update, the transition probabillities must be calculated as well as the approximations.
 %%%%%%
 % Results %
 %%%%%%
