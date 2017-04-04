@@ -92,18 +92,67 @@ Using this exact method we obtain an optimal policy for any state of the 4 downs
 
 \subsection{Approximation with Neuro-Dynamic Programming}
 
-%%%%%%%%%%%%%
-% Heuristic Benchmark %
-%%%%%%%%%%%%%
-\section{Heuristic Benchmark}
+%%%%%%%%
+% Simulation %
+%%%%%%%%
+\section{Simulation}
 
+\subsection{Expected Reward}
+Given a set of $N$ simulated sample trajectories for a specific policy $\mu$, we can estimate the expected reward of this policy from a starting state $i^*$:
+$$
+J_{u_k}(i^*) = \frac{1}{N}\sum_{i=1}^N g_{T^i}^i
+$$
+where $g_{T^i}^i$ denotes the reward of the $i^{th}$ sample trajectory with drive length $T^i$.
+
+\subsection{Heuristic Benchmark}
+Rhe simulations and the expected reward function can be used to yield a heuristic benchmark for the optimal play-selection policy. We use the suggested heuristic policies from the paper in order to establish the correctness of the simulation algorithm. In particular, we consider the following heuristic policies:
+\begin{enumerate}
+\item If $d=1$ (first down): (\textbf{P})ass
+
+\item If $d=2$ (second down): 
+\begin{enumerate}
+\item If $y<3$ (less than 3 yards to next first down): (\textbf{R})un
+\item If $y\geq3$ (3 or more yards to next first down): (\textbf{P})ass
+\end{enumerate}
+
+\item If $d=3$ (third down): 
+\begin{enumerate}
+\item If $x<41$ (less than 41 yards to goal):
+\begin{enumerate}
+\item If $y<3$ (less than 3 yards to next first down): (\textbf{P})ass or (R)un
+\item If $y\geq3$ (3 or more yards to next first down): (\textbf{P})ass or (R)un
+\end{enumerate}
+\item If $x \geq 41$ (less than 41 yards to goal):
+\begin{enumerate}
+\item If $y<3$ (less than 3 yards to next first down): (P)ass or (\textbf{R})un
+\item If $y\geq3$ (3 or more yards to next first down): (\textbf{P})ass or (R)un
+\end{enumerate}
+\end{enumerate}
+
+\item If $d=4$ (forth down): 
+\begin{enumerate}
+\item If $x<41$ (less than 41 yards to goal):
+\begin{enumerate}
+\item If $y<3$ (less than 3 yards to next first down): (P)ass or (\textbf{R})un or (K)ick
+\item If $y\geq3$ (3 or more yards to next first down): (P)ass or (R)un or (\textbf{K})ick
+\end{enumerate}
+\item If $x \geq 41$ (less than 41 yards to goal):
+\begin{enumerate}
+\item If $y<3$ (less than 3 yards to next first down): (P)ass or (\textbf{R})un or P(U)nt
+\item If $y\geq3$ (3 or more yards to next first down): (P)ass or (R)un or P(\textbf{U})nt
+\end{enumerate}
+\end{enumerate}
+
+\end{enumerate}
+
+We estimated the expected reward for each of the $2^4*3^4 = 1296$ heuristic policy combinations from starting position $i^* = (x=80, y=10, d=1)$ (one of the most likely starting positions in football) and found the best heuristic expected reward-to-go to be $-1.26$. The associated policy to this reward is highlighted in bold. Note that the reward-to-go matches the heuristic result of the underlying paper, thus establishing the correctness of the simulation algorithm.
 
 %%%%%%%%%
 % API and OPI %
 %%%%%%%%%
 \section{Approximate and Optimistic Policy Iteration}
 
-\subsection{Simulation of Sample Trajectories}
+
 
 \subsection{Multilayer Perceptron (MLP)}
 
