@@ -288,8 +288,8 @@ best.heuristic.policy <- function() {
     return(list(options=options.best, J=J.best))    
 }
 
-best.heuristic <- best.heuristic.policy()
-write.csv(best.heuristic,"bestpolicy.csv")
+#best.heuristic <- best.heuristic.policy()
+#write.csv(best.heuristic,"bestpolicy.csv")
 
 # result from best.heuristic.policy function
 options.best <- list(o3a1='P', o3a2='P',
@@ -297,6 +297,7 @@ options.best <- list(o3a1='P', o3a2='P',
                      o4a1='R', o4a2='K',
                      o4b1='R', o4b2='U')
 expected.reward(get.heuristic.policy(options.best), i.start)
+
 
 
 # ----------------------------------------------------------------------
@@ -312,7 +313,7 @@ df.sample <- function(D, down) {
     row <- 1
     for (l in 1:length(D)) { # l-th sample trajectory
         for (t in 1:length(D[[l]]$i)) { # t-th state
-            if (D[[d]]$i[[t]]$d == down) {
+            if (D[[l]]$i[[t]]$d == down) {
                 df[row, 1] <- feature.vector(D[[l]]$i[[t]])[1] 
                 df[row, 2] <- feature.vector(D[[l]]$i[[t]])[2]
                 df[row, 3] <- D[[l]]$r
@@ -407,30 +408,37 @@ transition.prob <- function(D, mu) {
 #    }
 #}
 
+# get reward-to-go approximation for status i from neural network output
+J.approx <- function(Js, i) {
+    return(Js[[i$d]][Js[[i$d]][,1]==i$x & Js[[i$d]][,2]==i$y,3])
+}
+
+
+
 update.policy <- function(mu, r, D) {
     U <- c('P','R','U','K')
-    J.approx <- estimate.Js(r)
+    Js <- estimate.Js(r)
     p <- transition.prob(D, mu)
     
-    for(id in 1:4) {
-        for (ix in 1:100) {
-            for (iy in 1:100) {
-                s <- rep(0,4)
-                for (u in 1:length(U)) {
-                    
-                    for(jd in 1:4) {
-                        for (jx in 1:100) {
-                            for (jy in 1:100) {
-                                #cat('.')
-                                s[u] <- s[u] + p[[u]][ix+(ix-1)*iy, jx+(jx-1)*jy] *
-                                               J.approx[[jd]][J.approx[[jd]][,1]==jx & J.approx[[jd]][,2]==jy,3]
-                            }
+    for (l in 1:length(D)) { # l-th sample trajectory
+        for (t in 1:length(D[[l]]$i)) { # t-th state                
+            i <- D[[l]]$i[[t]]
+            s <- rep(0,4)
+            for (u in 1:length(U)) {
+                
+                for(jd in 1:4) {
+                    for (jx in 1:100) {
+                        for (jy in 1:100) {
+                            #cat('.')
+                            p.iju <- p[[u]][i$x+(i$x-1)*i$y, jx+(jx-1)*jy]
+                            if (p.iju > 0)
+                                s[u] <- s[u] + p.iju * J.approx(Js, list(d=jd, x=jx, y=jy))
                         }
                     }
                 }
-                print(s)
-                mu[[id]][ix,iy] <- U[which.max(s)]
             }
+            print(s)
+            mu[[i$d]][i$x,i$y] <- U[which.max(s)]
         }
     }
     return(mu)
@@ -441,7 +449,7 @@ update.policy <- function(mu, r, D) {
 # ----------------------------------------------------------------------
 API <- list(Np=1, Ne=8000, Ns=8000, Nt=8000)
 OPI <- list(Np=200, Ne=1, Ns=1, Nt=1)
-config <- list(Np=20, Ne=10, Ns=10, Nt=10) # for test purposes
+config <- list(Np=1, Ne=100, Ns=100, Nt=100) # for test purposes
 
 approx.policy.iteration <- function(config) {
     i.start <- list(d=1, x=80, y=10)
@@ -453,20 +461,25 @@ approx.policy.iteration <- function(config) {
     
     for (k in 1:100) {
         # (2.a) obtain estimate for expected reward 
-        if (k %% config$Np == 0)
+        if (k %% config$Np == 0) {
             J <- c(J, expected.reward(mu[[k]], i.start, config$Ne))
+            print(expected.reward(mu[[k]], i.start, config$Ne))
+        }
         
         # (2.b) generate sample trajectories
+        cat('.')
         D <- generate.sample(mu[[k]], config$Ns)
         
         # (2.c) train parameter vector
+        cat('.')
         r <- train.nns(D, config$Nt) 
         
         # (2.d) set new policy
+        cat('.')
         mu[[k+1]] <- update.policy(mu[[k]], r, D)
     }
     
     return(J)
 }
 
-#J <- approx.policy.iteration(OPI)
+J <- approx.policy.iteration(config)
