@@ -57,8 +57,10 @@ simulate.drive <- function(mu, i.start=NA) {
     
     # initial state
     i[[t]] <- i.start
-    if (is.na(i.start))
+    if (all(is.na(i.start))) {
+        print('start point is NA')
         i[[t]] <- initial.condition()
+    }
     
     terminated <- FALSE
     while(!terminated) {
@@ -178,7 +180,7 @@ expected.reward <- function(mu, i.start, Ne=10000) {
     return(m)
 }
 
-#i.start <- list(d=1, x=80, y=10)
+i.start <- list(d=1, x=80, y=10)
 #expected.reward(mu, i.start)
 
 # ----------------------------------------------------------------------
@@ -303,7 +305,8 @@ expected.reward(get.heuristic.policy(options.best), i.start)
 # (2) Neural network
 # ----------------------------------------------------------------------
 feature.vector <- function(i) {
-    return(c(0.01*i$x, 0.01*i$y))
+    # translate the x and y to standardized features
+    return(c(0.01*(i$x), 0.01*(i$y)))
 }
 
 # translate sample data into data frame for neural network training
