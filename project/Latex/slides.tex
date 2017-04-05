@@ -69,20 +69,11 @@
 \end{itemize}
 \end{frame}
 
-\section{The Football Model}
-\begin{frame}
-\frametitle{The Football Model}
-
-\begin{center}
-\includegraphics[scale=0.3]{field}
-\end{center}
-\end{frame}
-
 \begin{frame}
 \frametitle{Exact Dynamic Programming}
 \begin{block}{DP Equation}
 \begin{center}
-$\mu^{k}(i) = arg\max\limits_{u \in U} \Big[ \sum\limits_{j \in S} p_{ij}(u)(g(i,u,j) +  J^{\mu^{k-1}}(j))\Big]$
+$\mu^{k}(i) = arg\max\limits_{u \in U} \Big[ \sum\limits_{j \in S} p_{ij}(u)(g(i,u,j) +  J^{\mu^{k-1}}(j))\Big] \, \, \, \forall i \in S$
 \end{center}
 \end{block}
 \begin{itemize}
@@ -94,13 +85,12 @@ $J$ is computed exactly using the 15250 possible states of the system.
 \end{frame}
 
 \begin{frame}
-\frametitle{Heuristic Algorithm}
+\frametitle{Simulations}
 \begin{itemize}
 \item We create a reasonable class of policies and implement it. 
 \item Policies are compared by calculating the points from one drive.
-\item Simulations are run from the starting state of $(x_{i},y_{i},d) = (80, 10, 1)$.
-\pause
-\item Example of simulation:
+\item Simulations for an optimal heuristic policy are run from the starting state of $(x_{i},y_{i},d) = (80, 10, 1)$.
+\item Example of a simulation:
 \end{itemize}
 $$
 \begin{bmatrix} 25\\[0.3em] 10 \\[0.3em] 1 \end{bmatrix}
@@ -120,25 +110,21 @@ $$
 \end{frame}
 
 \begin{frame}
-\frametitle{Approximate Dynamic Programming}
+\frametitle{API and OPI Algorithm}
 \begin{itemize}
-\item In more general frameworks, the exact reward-to-go function cannot be computed
-\item Two different ways for approximating:
+\item Two different ways to make the approximations
 \begin{itemize}
 \item API: Many training sample points, few iterations
 \item OPI: Few training sample points, many iterations
 \end{itemize}
+\item Algorithm:
 \end{itemize}
-\end{frame}
-
-\begin{frame}
-\frametitle{API and OPI Algorithm}
 \begin{enumerate}
 \item Start an initial policy $\mu_{0}$
 \item For each $k$:
 \begin{enumerate}
-\item Given $\mu_{k}$, generate $N_{e}$ sample trajectories
-\item Fit the neural network to estimate the reward-to-go function
+\item Given $\mu_{k}$, simulate $N_{s}$ sample trajectories
+\item Fit the neural network using the sample data to estimate the $J$
 \item Update policy
 \end{enumerate}
 \end{enumerate}

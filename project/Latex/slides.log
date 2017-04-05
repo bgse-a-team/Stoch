@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.10.8)  5 APR 2017 12:25
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.10.8)  5 APR 2017 17:23
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1282,41 +1282,29 @@ thkerncmss.
 
 ] [10
 
-] <images/field.png, id=306, 1109.746pt x 540.419pt>
-File: images/field.png Graphic file (type png)
+] [11
 
-<use images/field.png>
-Package pdftex.def Info: images/field.png used on input line 79.
-(pdftex.def)             Requested size: 332.92638pt x 162.12694pt.
- [11
-
- <./images/field.png>] [12
+] [12
 
 ] [13
 
-] [14
-
-] [15
-
-] [16
-
 ]
-<images/neuralnet.png, id=474, 530.73282pt x 342.5297pt>
+<images/neuralnet.png, id=388, 530.73282pt x 342.5297pt>
 File: images/neuralnet.png Graphic file (type png)
 
 <use images/neuralnet.png>
-Package pdftex.def Info: images/neuralnet.png used on input line 150.
+Package pdftex.def Info: images/neuralnet.png used on input line 136.
 (pdftex.def)             Requested size: 344.97224pt x 222.64166pt.
 
-Overfull \hbox (2.67694pt too wide) in paragraph at lines 150--150
+Overfull \hbox (2.67694pt too wide) in paragraph at lines 136--136
 [][]  
  []
 
-[17
+[14
 
- <./images/neuralnet.png (PNG copy)>] [18
+ <./images/neuralnet.png (PNG copy)>] [15
 
-] [19
+] [16
 
 ]
 \tf@nav=\write6
@@ -1328,28 +1316,28 @@ Overfull \hbox (2.67694pt too wide) in paragraph at lines 150--150
 \tf@snm=\write8
 \openout8 = `slides.snm'.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 167.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 167.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 153.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 153.
  (./slides.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 167.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 167.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 153.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 153.
 Package rerunfilecheck Info: File `slides.out' has not changed.
-(rerunfilecheck)             Checksum: D5C806F5335ACF51BA97A57B9C057252;106.
+(rerunfilecheck)             Checksum: A2816733E92BCA3A3BF42B6D55B14D54;53.
 
 
 LaTeX Font Warning: Size substitutions with differences
 (Font)              up to 1.0pt have occurred.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 167.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 153.
  ) 
 Here is how much of TeX's memory you used:
- 17236 strings out of 493014
- 330638 string characters out of 6133351
- 401338 words of memory out of 5000000
- 20317 multiletter control sequences out of 15000+600000
+ 17218 strings out of 493014
+ 330427 string characters out of 6133351
+ 400337 words of memory out of 5000000
+ 20307 multiletter control sequences out of 15000+600000
  14191 words of font info for 52 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 56i,16n,57p,386b,648s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 56i,16n,57p,386b,659s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb
 ></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb>
 </usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></
@@ -1362,10 +1350,10 @@ cal/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmssi8.pfb></usr/loc
 al/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/loca
 l/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/local/
 texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb>
-Output written on slides.pdf (19 pages, 288652 bytes).
+Output written on slides.pdf (16 pages, 236839 bytes).
 PDF statistics:
- 604 PDF objects out of 1000 (max. 8388607)
- 549 compressed objects within 6 object streams
- 41 named destinations out of 1000 (max. 500000)
- 105 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 514 PDF objects out of 1000 (max. 8388607)
+ 465 compressed objects within 5 object streams
+ 34 named destinations out of 1000 (max. 500000)
+ 92 words of extra memory for PDF output out of 10000 (max. 10000000)
 
