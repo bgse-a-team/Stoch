@@ -6,13 +6,12 @@
 #
 # (Authors) Daniel Bestard Delgado, Michael Cameron, 
 #           Hans-Peter Höllwirth, Akhil Lohia
-# (Date)    03.2017
+# (Date)    04.2017
 
 # house cleaning
 rm(list = ls())
 
 # load libraries
-#library(neuralnet)
 if(!require(nnet)) {
   install.packages('nnet')
 }
@@ -296,9 +295,6 @@ best.heuristic.policy <- function() {
     return(list(options=options.best, J=J.best))    
 }
 
-#best.heuristic <- best.heuristic.policy()
-#write.csv(best.heuristic,"bestpolicy.csv")
-
 # result from best.heuristic.policy function
 options.best <- list(o3a1='P', o3a2='P',
                      o3b1='R', o3b2='P',
@@ -337,13 +333,6 @@ df.sample <- function(D, down) {
 # train neural network for particular down
 train.nn <- function(D, down, Nt, R) {
     df <- df.sample(D, down)
-    #start.weights <- rnorm((R*2) + 2*R + 1)
-    #start.weights <- rep(0.1, (R*2) + 2*R + 1)
-    #r <- neuralnet(formula = J ~ x + y, learningrate = 0.0000001, data=df, hidden=R, rep=1,
-    #               startweights=NULL, algorithm = 'backprop')
-    #r <- neuralnet(formula = J ~ x + y, learningrate = 0.01, 
-    #               data=df, hidden=R, rep=1, algorithm = 'backprop', startweights = start.weights)
-    #r <- neuralnet(formula = J ~ x + y, data=df, hidden=20, rep=1)
     if (nrow(df) > 0) {r <- nnet(formula = J ~ x + y, data=df, size=R, linout = TRUE) }
     else {r <- NA}
     return(r)
@@ -457,11 +446,11 @@ update.policy <- function(mu, r, D) {
 }
 
 # ----------------------------------------------------------------------
-# (4) API and OPI
+# (4) API and OPI algorithm
 # ----------------------------------------------------------------------
 API <- list(Np=10, Ne=8000, Ns=8000, Nt=8000)
 OPI <- list(Np=1, Ne=10000, Ns=1, Nt=1)
-config <- list(Np=100, Ne=10000, Ns=100, Nt=100) # for test purposes
+config <- list(Np=1, Ne=500, Ns=100, Nt=100) # for test purposes
 
 approx.policy.iteration <- function(config) {
     i.start <- list(d=1, x=80, y=10)
@@ -471,7 +460,7 @@ approx.policy.iteration <- function(config) {
     mu <- list()
     mu[[1]] <- dummy.heuristic.policy()
     
-    for (k in 1:100) {
+    for (k in 1:50) {
         # (2.a) obtain estimate for expected reward 
         if (k %% config$Np == 0) {
             J <- c(J, expected.reward(mu[[k]], i.start, config$Ne))
@@ -495,6 +484,4 @@ approx.policy.iteration <- function(config) {
     return(J)
 }
 
-J <- approx.policy.iteration(OPI)
-config <- OPI
-write.csv(J, 'Jresult.csv')
+J <- approx.policy.iteration(config)
