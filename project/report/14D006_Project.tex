@@ -250,6 +250,30 @@ We set $\mu_{0}$ to an heuristic policy. Step (a) and the underlying simulation 
 \subsection{Generating Sample Drives}
 At each iteration we generate $N_S$ sample drives by simulation. In contrast to the sample simulation for estimating the expected reward, we choose the initial state of the drive randomly. The random mechanism ensures that we encounter the most likely states with high probability. The mechansim looks as follows:
 %% Add sampling initial conditions
+\begin{enumerate}
+\item With probability 0.35 start at fourth down
+\begin{itemize}
+\item Yards to go to goal line, $x$, is chosen uniformly from 1 to 100.
+\item Yards to next first down, $y$, is chosen uniformly from 1 to x.
+\end{itemize}
+\item With probability 0.30 start at third down
+\begin{itemize}
+\item Yards to go to goal line, $x$, is chosen uniformly from 1 to 100.
+\item Yards to next first down, $y$, is chosen uniformly from 1 to x.
+\end{itemize}
+\item With probability 0.25 start at second down
+\begin{itemize}
+\item With probability 0.25 $x$ is chosen uniformly from 1 to 50.
+\item With probability 0.75 $x$ is chosen uniformly from 51 to 100.
+\item Yards to next first down, $y$, is chosen uniformly from 1 to x.
+\end{itemize} 
+\item With probability 0.10 start at first down
+\begin{itemize}
+\item With probability 0.25 $x$ is chosen uniformly from 1 to 75.
+\item With probability 0.75 $x$ is chosen uniformly from 76 to 100.
+\item If $x < 10$ ,choose $y=x$. Else choose $y=10$
+\end{itemize}
+\end{enumerate}
 
 \subsection{Multilayer Perceptron (MLP)}
 In our implementation, we use the multilayer perceptron (MLP) architecture to approximate the reward-to-go function $J_{\mu}(i)$ for policy $\mu$ from state $i$. We train 4 neural networks, one for each possible down $d$. Each neural network consists of 2 input nodes (scaled $x$ and $y$: ), one hidden layer with 20 nodes, and one output node ($J$). The architecture is depicted in figure 1. We scale the input values by a factor of $\sigma_{d}^{x} = \sigma_{d}^{y} = 0.01$ for all $d$ to obtain values in the range $[0,1]$. The neural networks then essentially find the least-squares estimates to the reward-to-go values $J_{\mu}(i)$. We use the R library \textit{nnet} to train the neural networks. The number of training cycles is limited to $N_t$. \\
@@ -264,7 +288,16 @@ The trained neural networks will then be used to predict the reward-to-go values
 \end{figure}
 
 \subsection{Policy Update}
-To carry out this update, the transition probabillities must be calculated as well as the approximations.
+Finally, we use the predictions for the reward-to-go function $J_{\mu}(i)$ from the trained neural network $r^{k-1}$ to update the policy:
+$$
+\mu^{k}(i) = G(r)(i) = arg\max\limits_{u \in U} \Big[ \sum\limits_{j \in S} p_{ij}(u)(g(i,u,j) +  \widetilde{J}(i,r^{k-1}))\Big] \quad \forall i \in S
+$$
+We set the immediate reward function $g(i,u,j) = 0$ for all $(i, j)$ pairs reward is only earned at the termination of the drive. Furthermore, we take the estimates for the reward-to-go $\widetilde{J}(i,r^{k-1})$ from the neural network output.\\
+
+To compute the expected reward, all that is left is finding the transition probabilities $p_{ij}(u)$ from state $i$ to state $j$ with action $u$. Note that the transition matrix $P(u) = (p_{ij}(u)$ is of dimension $15,250 \times 15,250$! Unfortunately, the paper does not mention how to derive the transition probabilities. We decided to use the generated sample data to empirically estimate the transition probabilities. Note that this approach gives us a sparse transition matrix, even for large sample sizes $N_S$. However, this sparsity allows us to compute the sum over all possible transitions effectively. \\
+
+In a final step, we compare the expected reward of a state $i$ with each action $u \in \{P, R, U, K\}$ and set $\mu^k(i)$ to the action that gives the maximum expected reward.
+
 %%%%%%
 % Results %
 %%%%%%
