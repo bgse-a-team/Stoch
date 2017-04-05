@@ -461,7 +461,7 @@ update.policy <- function(mu, r, D) {
 # ----------------------------------------------------------------------
 API <- list(Np=10, Ne=8000, Ns=8000, Nt=8000)
 OPI <- list(Np=1, Ne=10000, Ns=1, Nt=1)
-config <- list(Np=100, Ne=10000, Ns=100, Nt=100) # for test purposes
+config <- list(Np=1, Ne=100, Ns=50, Nt=100) # for test purposes
 
 approx.policy.iteration <- function(config) {
     i.start <- list(d=1, x=80, y=10)
@@ -471,7 +471,7 @@ approx.policy.iteration <- function(config) {
     mu <- list()
     mu[[1]] <- dummy.heuristic.policy()
     
-    for (k in 1:100) {
+    for (k in 1:50) {
         # (2.a) obtain estimate for expected reward 
         if (k %% config$Np == 0) {
             J <- c(J, expected.reward(mu[[k]], i.start, config$Ne))
@@ -495,6 +495,5 @@ approx.policy.iteration <- function(config) {
     return(J)
 }
 
-J <- approx.policy.iteration(OPI)
-config <- OPI
+J <- approx.policy.iteration(config)
 write.csv(J, 'Jresult.csv')
