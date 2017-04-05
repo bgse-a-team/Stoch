@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.10.8)  5 APR 2017 17:34
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.10.8)  5 APR 2017 17:36
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1306,6 +1306,8 @@ Overfull \hbox (2.67694pt too wide) in paragraph at lines 146--146
 
  <./images/neuralnet.png (PNG copy)>] [16
 
+] [17
+
 ]
 \tf@nav=\write6
 \openout6 = `slides.nav'.
@@ -1316,11 +1318,11 @@ Overfull \hbox (2.67694pt too wide) in paragraph at lines 146--146
 \tf@snm=\write8
 \openout8 = `slides.snm'.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 154.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 154.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 163.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 163.
  (./slides.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 154.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 154.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 163.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 163.
 Package rerunfilecheck Info: File `slides.out' has not changed.
 (rerunfilecheck)             Checksum: A2816733E92BCA3A3BF42B6D55B14D54;53.
 
@@ -1328,11 +1330,11 @@ Package rerunfilecheck Info: File `slides.out' has not changed.
 LaTeX Font Warning: Size substitutions with differences
 (Font)              up to 1.0pt have occurred.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 154.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 163.
  ) 
 Here is how much of TeX's memory you used:
- 17248 strings out of 493014
- 331244 string characters out of 6133351
+ 17250 strings out of 493014
+ 331263 string characters out of 6133351
  400337 words of memory out of 5000000
  20332 multiletter control sequences out of 15000+600000
  16144 words of font info for 59 fonts, out of 8000000 for 9000
@@ -1355,10 +1357,10 @@ ive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texli
 ve/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy5.pfb></usr/local/texlive
 /2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/local/texlive/2
 016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb>
-Output written on slides.pdf (16 pages, 276101 bytes).
+Output written on slides.pdf (17 pages, 278783 bytes).
 PDF statistics:
- 534 PDF objects out of 1000 (max. 8388607)
- 480 compressed objects within 5 object streams
- 34 named destinations out of 1000 (max. 500000)
+ 561 PDF objects out of 1000 (max. 8388607)
+ 505 compressed objects within 6 object streams
+ 36 named destinations out of 1000 (max. 500000)
  92 words of extra memory for PDF output out of 10000 (max. 10000000)
 

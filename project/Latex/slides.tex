@@ -146,6 +146,15 @@ $\mu^{k}(i) = arg\max\limits_{u \in U} \Big[ \sum\limits_{j \in S} p_{ij}(u)(g(i
 \end{frame}
 
 \begin{frame}
+\frametitle{Policy Update}
+\begin{block}{Approximated DP algorithm}
+\begin{center}
+$\mu^{k}(i) = arg\max\limits_{u \in U} \Big[ \sum\limits_{j \in S} p_{ij}(u)(g(i,u,j) +  \widetilde{J}^{\mu^{k-1}}(j))\Big]$
+\end{center}
+\end{block}
+\end{frame}
+
+\begin{frame}
 \frametitle{Super Bowl XLIX}
 \begin{center}
 Seahawks should have run!
