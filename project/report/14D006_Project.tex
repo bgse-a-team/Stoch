@@ -112,15 +112,19 @@ In this model of the football problem, the solution can be computed directly. Ho
 
 %% comment: optimal solution not implemented. should be written as motivation for approximation solution!!
 \subsection{Optimal Solution}
-Our original problem has 15250 states. The rules of our model are such that at first down there is a unique value of y associated with each value of x. Note, that the number of possible combinations is much larger than the 15250 that we claim. There is the additional constraint that it is impossible to have the number of yards to next down greater than yards to the goal line, that is, we cannot have $y>x$. \\
+Our original problem has 15250 states. The rules of our model are such that at each first down there is a unique value of y associated with each value of x. Note, that the number of possible combinations is much larger than the 15250 that we claim. There is the additional constraint that it is impossible to have the number of yards to next down greater than yards to the goal line, that is, we cannot have $y>x$. This reduces the number of tates to 15250.\\
 
-This is computationally tractable, so we can apply the dynamic programming algorithm. 
+This is still a large problem. In their paper, Bertsekas and Patek, have carried out the computations to find the optimal policy. They have applied the dynamic programming algorithm. 
 $$
 \mu^{k}(i) = arg\max\limits_{u \in U} \Big[ \sum\limits_{j \in S} p_{ij}(u)(g(i,u,j) +  J^{\mu^{k-1}}(j))\Big] \quad \forall i \in S
 $$
 This algorithm chooses the policy u  which maximises the expected reward. In the formula above, $i$ represents the state we are currently in and $j$ is the state we move to. $p_{ij}(u)$ are the transition probabilities, giving the probability from moving from state $i$ to state $j$ under action $u$. The reward function is $g(i,u,j)$, which is 0 in every stage except for the terminal state. This is because we only gain rewards after scoring or losing the ball. While $J^{\mu^{k-1}}(j)$ is the reward-to-go  function from the state $j$. \\
 
-Using this exact method we obtain an optimal policy for any state of the 4 downs. These optimal policies can been in Figure 1,1 in Bertsekas and Patek. As a benchmark, using this policy from the state $(x,y,d)=(80,10,1)$ and running simulations with the optimal policy, the expected net reward is -0.9449 points. This means that if we start each drive in this state, we are expected to lose the game!
+Using this exact method we obtain an optimal policy for any state of the 4 downs. These optimal policies can be seen in Figure 1,1 in Bertsekas and Patek. As a benchmark, using this policy from the state $(x,y,d)=(80,10,1)$ (a common starting point in football) and running simulations with the optimal policy, the expected net reward is -0.9449 points. This means that if we start each drive in this state, we are expected to lose the game! \\
+
+Although, this problem is computationally possible. It is still a large problem and can easily be made even bigger by introducing other variables, such as time. This is the basis for our motivation to use approximations to compute the optimal policies. Using these approximation methods it is possible to go on to compute larger problems, whereas finding the exact solution becomes computationally unfeasible easily.
+
+
 
 \subsection{Approximation with Neuro-Dynamic Programming}
 An important part of the implentation of this algorithm is the apporximations of the reward-to-go functions. 
