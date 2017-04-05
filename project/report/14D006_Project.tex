@@ -251,27 +251,27 @@ We set $\mu_{0}$ to an heuristic policy. Step (a) and the underlying simulation 
 At each iteration we generate $N_S$ sample drives by simulation. In contrast to the sample simulation for estimating the expected reward, we choose the initial state of the drive randomly. The random mechanism ensures that we encounter the most likely states with high probability. The mechansim looks as follows:
 %% Add sampling initial conditions
 \begin{enumerate}
-\item With probability 0.35 start at fourth down
+\item Set $d=1$ (first down) with probability 0.10
 \begin{itemize}
-\item Yards to go to goal line, $x$, is chosen uniformly from 1 to 100.
-\item Yards to next first down, $y$, is chosen uniformly from 1 to x.
+\item With probability 0.25 $x$ is chosen uniformly from 1 to 75.
+\item With probability 0.75 $x$ is chosen uniformly from 76 to 100.
+\item If $x < 10$ ,choose $y=x$. Else choose $y=10$
 \end{itemize}
-\item With probability 0.30 start at third down
-\begin{itemize}
-\item Yards to go to goal line, $x$, is chosen uniformly from 1 to 100.
-\item Yards to next first down, $y$, is chosen uniformly from 1 to x.
-\end{itemize}
-\item With probability 0.25 start at second down
+\item Set $d=2$ (second down) with probability 0.25
 \begin{itemize}
 \item With probability 0.25 $x$ is chosen uniformly from 1 to 50.
 \item With probability 0.75 $x$ is chosen uniformly from 51 to 100.
 \item Yards to next first down, $y$, is chosen uniformly from 1 to x.
 \end{itemize} 
-\item With probability 0.10 start at first down
+\item Set $d=3$ (third down) with probability 0.30
 \begin{itemize}
-\item With probability 0.25 $x$ is chosen uniformly from 1 to 75.
-\item With probability 0.75 $x$ is chosen uniformly from 76 to 100.
-\item If $x < 10$ ,choose $y=x$. Else choose $y=10$
+\item Yards to go to goal line, $x$, is chosen uniformly from 1 to 100.
+\item Yards to next first down, $y$, is chosen uniformly from 1 to x.
+\end{itemize}
+\item Set $d=4$ (fourth down) with probability 0.35
+\begin{itemize}
+\item Yards to go to goal line, $x$, is chosen uniformly from 1 to 100.
+\item Yards to next first down, $y$, is chosen uniformly from 1 to x.
 \end{itemize}
 \end{enumerate}
 
