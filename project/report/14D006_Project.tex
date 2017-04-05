@@ -127,7 +127,14 @@ Although, this problem is computationally possible. It is still a large problem 
 
 
 \subsection{Approximation with Neuro-Dynamic Programming}
-An important part of the implentation of this algorithm is the apporximations of the reward-to-go functions. 
+An important part of the implentation of this algorithm is the apporximations of the reward-to-go functions. We aim to calculate the approximate reward-to-go function for fixed policies, we can then focus on computing new policies given these approximations. Given the approximation $\widetilde{J}(i,r^{k-1})$ for a stationary policy $\mu^{k-1}$, compute a new policy $\mu^{k}$ by
+$$
+\mu^{k}(i) = G(r)(i) = arg\max\limits_{u \in U} \Big[ \sum\limits_{j \in S} p_{ij}(u)(g(i,u,j) +  \widetilde{J}(i,r^{k-1}))\Big] \quad \forall i \in S
+$$
+This is very similar to the dynamic programming algorithm we had seen previously, but now we are using the approximations. \\
+
+To obtain these approximations, we first run many simulated drives. Each drive will produce a reward given a randomly assigned starting position. This acts as our data to train the architecture of our approximation model. The architecture can take different forms. For instance Multi-Layered Perceptron (MLP), where a neural network is trained to give the approximate reward-to-go function, given a state. This is the method we implement in this report, but other frameworks are possible, such as the Quadritic architecture or Quadratic with Feature. More information on these two architectures can be found in the original Bertsekas and Patek paper.
+
 %%%%%%%%
 % Simulation %
 %%%%%%%%
@@ -225,21 +232,29 @@ We now describe in detail how the algorithms API and OPI are implemented in prac
     \item $N_{p}$: if, for example, $N_{p}=20$, then in every 20th iteration we compute the expected reward-to-go.
     \item $N_{e}$: number of sample trajectories that we use to compute the estimate of the reward-to-go function.
     \item $N_{s}$: number of sample trajectories in the in training set $D_{k}$ (see later).
-    \item $N_{t}$: number of times we train the neural network.
+    \item $N_{t}$: maximum number of training cycles for neural network.
 \end{itemize}
 The implementation of the algorithm is as follows:
 \begin{enumerate}
-    \item Start an initial policy $\mu_{0}$.
-    %% loop missing
+    \item Start with an initial policy $\mu_{0}$.
+    \item Iteratively compute
+    \begin{enumerate}
     \item Given $\mu_{k}$, if $k \in \{j \cdot N_{p} | j=0,1,2,…\}$, then generate $N_{e}$ sample trajectories, each starting from $i^{*}$, to obtain an estimate of $J_{\mu_{k}}(i^{*})$
     \item Given the probabilistic rule for picking initial conditions, generate $N_{s}$ sample trajectories and record $D_{k}$, where the last element is simply an object that stores the reward and the sequence of the vector of states. $D_{k}$ is created because we use its elements in the next step of the algorithm.
     \item We fit the neural networks to estimate the reward-to-go function and save the object in a variable that we call $r^{k}$ which uses the elements of $D_{k}$. The neural networks cycle through the data $N_{t}$ times.
     \item Compute a new policy $\mu_{k+1} := G(r^{k})$, where $G$ is the “greedy” operator which chooses the actions at each state that are best with respect to the reward-to-go approximation given by $r^{k}$.
+    \end{enumerate}
 \end{enumerate}
+We set $\mu_{0}$ to an heuristic policy. Step (a) and the underlying simulation function are described in chapter 4.
+
+\subsection{Generating Sample Drives}
+At each iteration we generate $N_S$ sample drives by simulation. In contrast to the sample simulation for estimating the expected reward, we choose the initial state of the drive randomly. The random mechanism ensures that we encounter the most likely states with high probability. The mechansim looks as follows:
+%% Add sampling initial conditions
 
 \subsection{Multilayer Perceptron (MLP)}
+In our implementation, we use the multilayer perceptron (MLP) architecture to approximate the reward-to-go function $J_{\mu}(i)$ for policy $\mu$ from state $i$. We train 4 neural networks, one for each possible down $d$. Each neural network consists of 2 input nodes (scaled $x$ and $y$: ), one hidden layer with 20 nodes, and one output node ($J$). The architecture is depicted in figure 1. We scale the input values by a factor of $\sigma_{d}^{x} = \sigma_{d}^{y} = 0.01$ for all $d$ to obtain values in the range $[0,1]$. The neural networks then essentially find the least-squares estimates to the reward-to-go values $J_{\mu}(i)$. We use the R library \textit{nnet} to train the neural networks. The number of training cycles is limited to $N_t$. \\
 
-As stated ealier in the report, we can replace the exact values of the reward-to-go function with approximates. To obtain these estimates we can use a trained neural network. The network has 2 inputs $x$ and $y$, one hidden layer with 20 nodes, and is trained on the exact output $J$. We construct 4 of these networks, one for each possible down. For each of these neural networks we input the feature vector $\xi^{\Sigma}(i) = (\sigma_{d}^{x} x_{i}, \sigma_{d}^{y} y_{i})$, In the football example we set $\sigma_{d}^{x} = \sigma_{d}^{y} = 0.01$ to ensure that all elements of $\xi^{\Sigma}(i)$ are in $[0,1]$. This now allows us to get an estimate for the reward-to-go function from any state, by inputting $x$ and $y$ in the feature vectors into the correct neural network depending on the down. 
+The trained neural networks will then be used to predict the reward-to-go values for all possible states $i = (x,y,d)$. We compute the predictions for all state combinations and store them for the policy update step.
 
 
 \begin{figure}[ht!]
@@ -249,11 +264,6 @@ As stated ealier in the report, we can replace the exact values of the reward-to
 \end{figure}
 
 \subsection{Policy Update}
-Now that we can calculate the approximate reward-to-go function for fixed policies, we can now focus on computing new policies given these approximations. Both API and OPI follow the same outline, given the approximation $\widetilde{J}(i,r^{k-1})$ for a stationary policy $\mu^{k-1}$, compute a new policy $\mu^{k}$ by
-$$
-\mu^{k}(i) = G(r)(i) = arg\max\limits_{u \in U} \Big[ \sum\limits_{j \in S} p_{ij}(u)(g(i,u,j) +  \widetilde{J}(i,r^{k-1}))\Big] \quad \forall i \in S
-$$
-This is very similar to the dynamic programming algorithm we had seen previously, but now we are using the approximations. \\
 To carry out this update, the transition probabillities must be calculated as well as the approximations.
 %%%%%%
 % Results %
