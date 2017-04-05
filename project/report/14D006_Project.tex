@@ -46,7 +46,7 @@ We consider the dynamic programming framework to compute an optimal policy for p
 
 We consider policy iteration algorithms for this task. The large number of possible states in the system (15,250), makes it hard to find the optimal solution numerically. Instead, we consider neuro-dynamic programming algorithms which approximate the optimal solution. In particular, we apply Approximate Policy Iteration (API) and Optimistic Policy Iteration (OPI) to estimate the reward-to-go function from simulated sample drives.\\
 
-The project is based on the paper "Play Selection in American Football: A Case Study in Neuro-Dynamic Programming" by Patek and Bertsekas (1997). In the following sections we assume some basic understanding of the American football rules. 
+The project is based on the paper "Play Selection in American Football: A Case Study in Neuro-Dynamic Programming" by Patek and Bertsekas (1997). In the following sections we assume some basic understanding of the American football rules.
 
 
 %%%%%%%%%%%%
@@ -70,13 +70,13 @@ The \textbf{state} of the system $i \in S$ is described by a vector of 3 quantit
 At each state, the team can choose from one of 4 play options (\textbf{actions}) $u \in U$ with $U=\{R, P, U, K\}$. Each play is described using probability distributions, to model the yards gained. For this section we use the models set out in the original paper:
 \begin{itemize}
 \item (R)un: moves $D_p - 2$ yards forward with $D_p \sim \text{Poisson}(6)$, with probability 0.05 of a fumble.
-\item (P)ass: moves $D_p - 2$ yards forward with $D_p \sim \text{Poisson}(12)$, with probability 0.05 of an interception, 0.45 of incompletion, 0.05 of quarterback sack and 0.45 of completion. 
-\item P(U)nt: moves $6 D_p  + 6$ yards forward with $D_p \sim \text{Poisson}(10)$ 
+\item (P)ass: moves $D_p - 2$ yards forward with $D_p \sim \text{Poisson}(12)$, with probability 0.05 of an interception, 0.45 of incompletion, 0.05 of quarterback sack and 0.45 of completion.
+\item P(U)nt: moves $6 D_p  + 6$ yards forward with $D_p \sim \text{Poisson}(10)$
 \item (K)ick: successful with probability $\max(0, .95 - .95x/60)$
 \end{itemize}
 The set of state-action pairs determine the stationary \textbf{policy} $\mu$. We look to choose the policy at any given state to maximise the expected reward. The \textbf{reward} of the drive is determined by the final state transition:
 \begin{itemize}
-\item Touchdown: 6.8 points (from run or pass) 
+\item Touchdown: 6.8 points (from run or pass)
 \item Opponent's touchdown: -6.8 points (from run or pass)
 \item Safety: -2.0 points (from pass or run)
 \item Field goal: 3.0 points (from kick)
@@ -108,13 +108,13 @@ In this case, we start from field position $i^* = (x=25, y=10, d=1)$, i.e. with 
 %%%%%%%%%%%%%%%%%%%%
 \newpage
 \section{Dynamic Programming Formulation}
-In this model of the football problem, the solution can be computed directly. However, the problem can quickly become computationally infeasible when introducing other elements of the game, such as time or half yard intervals. 
+In this model of the football problem, the solution can be computed directly. However, the problem can quickly become computationally infeasible when introducing other elements of the game, such as time or half yard intervals.
 
 %% comment: optimal solution not implemented. should be written as motivation for approximation solution!!
 \subsection{Optimal Solution}
 Our original problem has 15250 states. The rules of our model are such that at each first down there is a unique value of y associated with each value of x. Note, that the number of possible combinations is much larger than the 15250 that we claim. There is the additional constraint that it is impossible to have the number of yards to next down greater than yards to the goal line, that is, we cannot have $y>x$. This reduces the number of tates to 15250.\\
 
-This is still a large problem. In their paper, Bertsekas and Patek, have carried out the computations to find the optimal policy. They have applied the dynamic programming algorithm. 
+This is still a large problem. In their paper, Bertsekas and Patek, have carried out the computations to find the optimal policy. They have applied the dynamic programming algorithm.
 $$
 \mu^{k}(i) = arg\max\limits_{u \in U} \Big[ \sum\limits_{j \in S} p_{ij}(u)(g(i,u,j) +  J^{\mu^{k-1}}(j))\Big] \quad \forall i \in S
 $$
@@ -153,7 +153,7 @@ The approximations of the reward-to-go function $J_{u_k}(i^*)$ are obtained from
 \item (0.45) pass incomplete
 \item (0.45) pass complete with movement $D_p -2$ with $D_p \sim \text{Poisson}(12)$
 \end{itemize}
-\item P(U)nt attempts always result in turn-over with movement $6 D_p + 6$ with $D_p \sim \text{Poisson}(10)$ 
+\item P(U)nt attempts always result in turn-over with movement $6 D_p + 6$ with $D_p \sim \text{Poisson}(10)$
 \item (K)ick attempts result in either
 \begin{itemize}
 \item (max(0,(0.95-0.95x/60)) successful field goal
@@ -168,7 +168,7 @@ No reward is earned in any state transition, except for the case where the drive
 \item safety (reward: -2.0)
 \item opponent's touchdown (=interception in opponent's endzone) (reward: -6.8)
 \end{itemize}
-Once the drive is terminated, the final field position $x$ of the drive determines the expected points gained by the opposing team: $6.8x/100$. 
+Once the drive is terminated, the final field position $x$ of the drive determines the expected points gained by the opposing team: $6.8x/100$.
 The simulation returns $N$ such sample drives. Each drive $l$ is described by its status sequence $(i_t^l)$ for $t=1,...,T^l$ and reward $g_{T^i}^l$.
 
 \subsection{Expected Reward}
@@ -183,13 +183,13 @@ The simulations and the expected reward function can be used to yield a heuristi
 \begin{enumerate}
 \item If $d=1$ (first down): (\textbf{P})ass
 
-\item If $d=2$ (second down): 
+\item If $d=2$ (second down):
 \begin{enumerate}
 \item If $y<3$ (less than 3 yards to next first down): (\textbf{R})un
 \item If $y\geq3$ (3 or more yards to next first down): (\textbf{P})ass
 \end{enumerate}
 
-\item If $d=3$ (third down): 
+\item If $d=3$ (third down):
 \begin{enumerate}
 \item If $x<41$ (less than 41 yards to goal):
 \begin{enumerate}
@@ -203,7 +203,7 @@ The simulations and the expected reward function can be used to yield a heuristi
 \end{enumerate}
 \end{enumerate}
 
-\item If $d=4$ (forth down): 
+\item If $d=4$ (forth down):
 \begin{enumerate}
 \item If $x<41$ (less than 41 yards to goal):
 \begin{enumerate}
@@ -269,6 +269,23 @@ To carry out this update, the transition probabillities must be calculated as we
 % Results %
 %%%%%%
 \section{Results}
+
+The football case study provides an effective testbed to evaluate the NDP framework. We implement the API and OPI algorithms using the Multilayer Perceptron architecture. In this case, the multilayer perceptron basically boils down to a neural network with one hidden layer of 20 nodes.
+The neural network trained on simulated drives from random starting points allow to approximate the reward-to-go from a given state instead of having to take a recursive path of calculating the expected reward. This is the major idea of the study which differentiates the reinforcement learning approach from usual dynamic programming.
+
+The football model represents a challenge for the approximate methods and seems to have characteristics of truly large scale examples. Apart from that, since we know the optimal results, it allows to evaluate the performance of our model. Finally, football is intuitive. This aids in the implementation and de-bugging of the algorithms and also provides a means for interpreting the results.
+
+\subsection{Heuristic Policy Results}
+We evaluate a large set of heuristic policies from a given starting point to find the one which gives the best results based on a large number of simulated drives. The best heuristic policy gives an expected reward of -1.2653 which is about .3 points worse than the optimal results.
+
+\subsection{API and OPI Results}
+We try a wide range of number of samples and iterations to get the updated policies for a given starting point. Unfortunately we do not achieve a convergence in terms of the expected reward from the given starting state. We obtain noisy expected scores in the same ballpark as Patek and Bertsekas albiet with quite a bit of variation.
+Possible ways we could think of to gain convergence include the following:
+\begin{itemize}
+	\item Continuously update the same neural network using new generated samples instead of training new models at every iteration. This should probably provide us with better approximates of the expected reward to go.
+	\item The calculation of transition probabilities can be done in a more sophisticated manner. Since we know the probabilistic results of every action taken at a given state, we should be able to calculate the expected state to which we will transition instead of considering the possibilities of all possible transitions.
+	\item We can modify the architecture of the model we use to approximate the reward to go from a given state. Currently we use a neural network with 1 hidden layer and 20 nodes. A deeper network with more layers or a different architecture like the quadratic or recursive one discussed by Patek and Bertsekas in their could result in less noisy approximate rewards from a given state.
+\end{itemize}
 
 \end{document}
 
