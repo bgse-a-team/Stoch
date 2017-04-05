@@ -160,9 +160,14 @@ simulate.drive <- function(mu, i.start=NA) {
             y <- min(x,10)
             d <- 1
         } 
-        if (d > 4) terminated <- TRUE 
+        if (d > 4) terminated <- TRUE
+        
+        if (terminated) {
+            i[[t]]$pen <- TRUE
+        }
 
         if (!terminated) {
+            i[[t]]$pen <- FALSE
             t <- t + 1
             i[[t]] <- list(d=d, x=x, y=y)
         }
@@ -437,7 +442,6 @@ update.policy <- function(mu, r, D) {
                 for(jd in 1:4) {
                     for (jx in 1:100) {
                         for (jy in 1:100) {
-                            #cat('.')
                             p.iju <- p[[u]][i$x+(i$x-1)*i$y, jx+(jx-1)*jy]
                             if (p.iju > 0)
                                 s[u] <- s[u] + p.iju * J.approx(Js, list(d=jd, x=jx, y=jy))
