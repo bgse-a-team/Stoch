@@ -102,36 +102,33 @@ T
 $$
 In this case, we start from field position $i^* = (x=25, y=10, d=1)$, i.e. with a first-down 25 yards from the endzone. The policy dictates to use a (P)ass play for this particular status which in this realization yields a 8 yard improvement, thus transitioning to $i^1 = (x=17, y=2, d=2)$. We continue with a mix of (P)ass and (R)un games and eventually (K)ick a field-goal at $4^{th}$-down which terminates the drive and results in a reward of 3 points.
 
+\subsection{Model Size}
+Since we discretize the yards ($x$ and $y$ each are integers between 1 and 100) and $d$ takes one of 4 values, we get a total of $100 \times 100 \times 4 = 40,000$ possible combinations. However, we know that $y <= x$, thus 20,000 of those combinations are not feasible. Furthermore, we know that whenever we encounter a first down ($d=1$), then $y$ is a function of $x$: $y = \min(10,x)$. Thus, we end up with 15,250 feasible states.
+
 
 %%%%%%%%%%%%%%%%%%%%
 % Dynamic Programming Formulation %
 %%%%%%%%%%%%%%%%%%%%
 \newpage
 \section{Dynamic Programming Formulation}
-In this model of the football problem, the solution can be computed directly. However, the problem can quickly become computationally infeasible when introducing other elements of the game, such as time or half yard intervals.
 
-%% comment: optimal solution not implemented. should be written as motivation for approximation solution!!
 \subsection{Optimal Solution}
-Our original problem has 15250 states. The rules of our model are such that at each first down there is a unique value of y associated with each value of x. Note, that the number of possible combinations is much larger than the 15250 that we claim. There is the additional constraint that it is impossible to have the number of yards to next down greater than yards to the goal line, that is, we cannot have $y>x$. This reduces the number of tates to 15250.\\
-
-This is still a large problem. In their paper, Bertsekas and Patek, have carried out the computations to find the optimal policy. They have applied the dynamic programming algorithm.
+The dynamic programming formulation of the football model to optimize the policy using policy iteration looks as follows:
 $$
 \mu^{k}(i) = arg\max\limits_{u \in U} \Big[ \sum\limits_{j \in S} p_{ij}(u)(g(i,u,j) +  J^{\mu^{k-1}}(j))\Big] \quad \forall i \in S
 $$
-This algorithm chooses the policy u  which maximises the expected reward. In the formula above, $i$ represents the state we are currently in and $j$ is the state we move to. $p_{ij}(u)$ are the transition probabilities, giving the probability from moving from state $i$ to state $j$ under action $u$. The reward function is $g(i,u,j)$, which is 0 in every stage except for the terminal state. This is because we only gain rewards after scoring or losing the ball. While $J^{\mu^{k-1}}(j)$ is the reward-to-go  function from the state $j$. \\
+This algorithm chooses the policy $u$ from the set $U=\{P,R,U,K\}$ which maximises the expected reward for each possible state $i \in S$. In the formula above, $i$ represents the state we are currently in and $j$ is the state we move to. $p_{ij}(u)$ are the transition probabilities, giving the probability from moving from state $i$ to state $j$ under action $u$. The immediate reward function is $g(i,u,j)$, which is 0 in every stage except for the terminal state. This is because we only gain rewards after scoring or losing the ball. Finally, $J^{\mu^{k-1}}(j)$ is the expected reward-to-go function if we move to state $j$. \\
 
-Using this exact method we obtain an optimal policy for any state of the 4 downs. These optimal policies can be seen in Figure 1,1 in Bertsekas and Patek. As a benchmark, using this policy from the state $(x,y,d)=(80,10,1)$ (a common starting point in football) and running simulations with the optimal policy, the expected net reward is -0.9449 points. This means that if we start each drive in this state, we are expected to lose the game! \\
-
-Although, this problem is computationally possible. It is still a large problem and can easily be made even bigger by introducing other variables, such as time. This is the basis for our motivation to use approximations to compute the optimal policies. Using these approximation methods it is possible to go on to compute larger problems, whereas finding the exact solution becomes computationally unfeasible easily.
+Note that the algorithm requires the computation of $J^{\mu^{k-1}}(j)$ for all 15,250 possible states. This turns out to be a computational problem. In their paper, Patek and Bertsekas, indeed chose the state description such that solving the problem numerically is still feasible. Their result shows that the optimal policy (starting from $i^*=(x=80,y=10,d=1)$ results in an expected net reward of -0.9449 points. 
+However, as Patek and Bertsekas point out, the model can easily be made larger (and therefore more realistic) by introducing other variables, such as time, or by increasing the level of detail of the field position (for example break down field position into 0.5 yards). This is the basis for our motivation to use approximations to compute the optimal policies. Using these approximation methods it is possible to go on to compute larger problems, whereas finding the exact solution becomes computationally unfeasible easily.
 
 
 
 \subsection{Approximation with Neuro-Dynamic Programming}
-An important part of the implentation of this algorithm is the apporximations of the reward-to-go functions. We aim to calculate the approximate reward-to-go function for fixed policies, we can then focus on computing new policies given these approximations. Given the approximation $\widetilde{J}(i,r^{k-1})$ for a stationary policy $\mu^{k-1}$, compute a new policy $\mu^{k}$ by
+The approximation algorithm we consider aims to approximate the expected reward-to-go function $J^{\mu}(j)$ with $\widetilde{J}^{\mu}(j)$.
 $$
-\mu^{k}(i) = G(r)(i) = arg\max\limits_{u \in U} \Big[ \sum\limits_{j \in S} p_{ij}(u)(g(i,u,j) +  \widetilde{J}(i,r^{k-1}))\Big] \quad \forall i \in S
+\mu^{k}(i) = arg\max\limits_{u \in U} \Big[ \sum\limits_{j \in S} p_{ij}(u)(g(i,u,j) +  \widetilde{J}(i,r^{k-1}))\Big] \quad \forall i \in S
 $$
-This is very similar to the dynamic programming algorithm we had seen previously, but now we are using the approximations. \\
 
 To obtain these approximations, we first run many simulated drives. Each drive will produce a reward given a randomly assigned starting position. This acts as our data to train the architecture of our approximation model. The architecture can take different forms. For instance Multi-Layered Perceptron (MLP), where a neural network is trained to give the approximate reward-to-go function, given a state. This is the method we implement in this report, but other frameworks are possible, such as the Quadritic architecture or Quadratic with Feature. More information on these two architectures can be found in the original Bertsekas and Patek paper.
 
@@ -251,27 +248,27 @@ We set $\mu_{0}$ to an heuristic policy. Step (a) and the underlying simulation 
 At each iteration we generate $N_S$ sample drives by simulation. In contrast to the sample simulation for estimating the expected reward, we choose the initial state of the drive randomly. The random mechanism ensures that we encounter the most likely states with high probability. The mechansim looks as follows:
 %% Add sampling initial conditions
 \begin{enumerate}
-\item With probability 0.35 start at fourth down
+\item Set $d=1$ (first down) with probability 0.10
 \begin{itemize}
-\item Yards to go to goal line, $x$, is chosen uniformly from 1 to 100.
-\item Yards to next first down, $y$, is chosen uniformly from 1 to x.
+\item With probability 0.25 $x$ is chosen uniformly from 1 to 75.
+\item With probability 0.75 $x$ is chosen uniformly from 76 to 100.
+\item If $x < 10$ ,choose $y=x$. Else choose $y=10$
 \end{itemize}
-\item With probability 0.30 start at third down
-\begin{itemize}
-\item Yards to go to goal line, $x$, is chosen uniformly from 1 to 100.
-\item Yards to next first down, $y$, is chosen uniformly from 1 to x.
-\end{itemize}
-\item With probability 0.25 start at second down
+\item Set $d=2$ (second down) with probability 0.25
 \begin{itemize}
 \item With probability 0.25 $x$ is chosen uniformly from 1 to 50.
 \item With probability 0.75 $x$ is chosen uniformly from 51 to 100.
 \item Yards to next first down, $y$, is chosen uniformly from 1 to x.
 \end{itemize} 
-\item With probability 0.10 start at first down
+\item Set $d=3$ (third down) with probability 0.30
 \begin{itemize}
-\item With probability 0.25 $x$ is chosen uniformly from 1 to 75.
-\item With probability 0.75 $x$ is chosen uniformly from 76 to 100.
-\item If $x < 10$ ,choose $y=x$. Else choose $y=10$
+\item Yards to go to goal line, $x$, is chosen uniformly from 1 to 100.
+\item Yards to next first down, $y$, is chosen uniformly from 1 to x.
+\end{itemize}
+\item Set $d=4$ (fourth down) with probability 0.35
+\begin{itemize}
+\item Yards to go to goal line, $x$, is chosen uniformly from 1 to 100.
+\item Yards to next first down, $y$, is chosen uniformly from 1 to x.
 \end{itemize}
 \end{enumerate}
 
@@ -290,7 +287,7 @@ The trained neural networks will then be used to predict the reward-to-go values
 \subsection{Policy Update}
 Finally, we use the predictions for the reward-to-go function $J_{\mu}(i)$ from the trained neural network $r^{k-1}$ to update the policy:
 $$
-\mu^{k}(i) = G(r)(i) = arg\max\limits_{u \in U} \Big[ \sum\limits_{j \in S} p_{ij}(u)(g(i,u,j) +  \widetilde{J}(i,r^{k-1}))\Big] \quad \forall i \in S
+\mu^{k}(i) = G(r^k)(i) = arg\max\limits_{u \in U} \Big[ \sum\limits_{j \in S} p_{ij}(u)(g(i,u,j) +  \widetilde{J}(i,r^{k-1}))\Big] \quad \forall i \in S
 $$
 We set the immediate reward function $g(i,u,j) = 0$ for all $(i, j)$ pairs reward is only earned at the termination of the drive. Furthermore, we take the estimates for the reward-to-go $\widetilde{J}(i,r^{k-1})$ from the neural network output.\\
 
