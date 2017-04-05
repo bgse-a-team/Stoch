@@ -129,7 +129,7 @@ Although, this problem is computationally possible. It is still a large problem 
 \subsection{Approximation with Neuro-Dynamic Programming}
 An important part of the implentation of this algorithm is the apporximations of the reward-to-go functions. We aim to calculate the approximate reward-to-go function for fixed policies, we can then focus on computing new policies given these approximations. Given the approximation $\widetilde{J}(i,r^{k-1})$ for a stationary policy $\mu^{k-1}$, compute a new policy $\mu^{k}$ by
 $$
-\mu^{k}(i) = G(r)(i) = arg\max\limits_{u \in U} \Big[ \sum\limits_{j \in S} p_{ij}(u)(g(i,u,j) +  \widetilde{J}(i,r^{k-1}))\Big] \quad \forall i \in S
+\mu^{k}(i) = arg\max\limits_{u \in U} \Big[ \sum\limits_{j \in S} p_{ij}(u)(g(i,u,j) +  \widetilde{J}(i,r^{k-1}))\Big] \quad \forall i \in S
 $$
 This is very similar to the dynamic programming algorithm we had seen previously, but now we are using the approximations. \\
 
@@ -290,7 +290,7 @@ The trained neural networks will then be used to predict the reward-to-go values
 \subsection{Policy Update}
 Finally, we use the predictions for the reward-to-go function $J_{\mu}(i)$ from the trained neural network $r^{k-1}$ to update the policy:
 $$
-\mu^{k}(i) = G(r)(i) = arg\max\limits_{u \in U} \Big[ \sum\limits_{j \in S} p_{ij}(u)(g(i,u,j) +  \widetilde{J}(i,r^{k-1}))\Big] \quad \forall i \in S
+\mu^{k}(i) = G(r^k)(i) = arg\max\limits_{u \in U} \Big[ \sum\limits_{j \in S} p_{ij}(u)(g(i,u,j) +  \widetilde{J}(i,r^{k-1}))\Big] \quad \forall i \in S
 $$
 We set the immediate reward function $g(i,u,j) = 0$ for all $(i, j)$ pairs reward is only earned at the termination of the drive. Furthermore, we take the estimates for the reward-to-go $\widetilde{J}(i,r^{k-1})$ from the neural network output.\\
 
