@@ -309,7 +309,14 @@ The football model represents a challenge for the approximate methods and seems 
 We evaluate a large set of heuristic policies from a given starting point to find the one which gives the best results based on a large number of simulated drives. The best heuristic policy gives an expected reward of -1.2653 which is about .3 points worse than the optimal results.
 
 \subsection{API and OPI Results}
-We try a wide range of number of samples and iterations to get the updated policies for a given starting point. Unfortunately we do not achieve a convergence in terms of the expected reward from the given starting state. We obtain noisy expected scores in the same ballpark as Patek and Bertsekas albiet with quite a bit of variation.
+We try a wide range of number of samples and iterations to get the updated policies for a given starting point. Unfortunately we do not achieve a convergence in terms of the expected reward from the given starting state as seen in Figure 3. We obtain noisy expected scores in the same ballpark as Patek and Bertsekas albeit with quite a bit of variation.
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=155mm]{../images/plot.png}
+\caption{Algorithm path with $N_S=100, N_E=1000, N_P=1$}
+\end{figure}
+
 Possible ways we could think of to gain convergence include the following:
 \begin{itemize}
 	\item Continuously update the same neural network using new generated samples instead of training new models at every iteration. This should probably provide us with better approximates of the expected reward to go.
